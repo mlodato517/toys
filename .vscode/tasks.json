@@ -1,0 +1,42 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build dotnet",
+      "command": "dotnet build",
+      "type": "shell",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "options": {
+				"cwd": "${workspaceFolder}/coins-on-the-clock/c#",
+			},
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build cpp",
+      "type": "shell",
+      "command": "g++",
+      "args": [
+          "-O3", "program.cpp", "-o", "program.exe"
+      ],
+      "options": {
+				"cwd": "${workspaceFolder}/coins-on-the-clock/cpp",
+			},
+    },
+    {
+      "label": "debug cpp",
+      "type": "shell",
+      "command": "g++",
+      "args": [
+          "-g", "program.cpp"
+      ],
+      "options": {
+				"cwd": "${workspaceFolder}/coins-on-the-clock/cpp",
+			},
+    },
+  ]
+}

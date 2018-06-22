@@ -17,7 +17,14 @@ char getCoinName(int value) {
 }
 
 // Gets int arrays corresponding to valid coin sequences
-// TODO add other params
+// numHours             - number of hours on the clock
+// values               - coin values we have (must match with counts)
+// counts               - count of each coin value (must match with values)
+// numValues            - number of different coin values we have
+// currentSequence      - array of coin values we've placed
+// clockState           - for each clock hour, true if a coin is on it
+// currentValue         - current clock hour we're on
+// currentSequenceIndex - index of currentSequence we're on
 vector<int*> getValidSequences(
   int numHours,
   int *values,
@@ -30,8 +37,10 @@ vector<int*> getValidSequences(
 ) {
   vector<int*> returnValues;
 
+  // If we're on the last hour, we have a valid sequence
   if (currentSequenceIndex == numHours) {
 
+    // Copy the array and push it onto the vector
     int *copiedSequence = new int[numHours];
     for (int i = 0; i < numHours; i += 1) {
       *(copiedSequence + i) = *(currentSequence + i);
@@ -39,20 +48,27 @@ vector<int*> getValidSequences(
     returnValues.push_back(copiedSequence);
   }
   else {
+
+    // FOr each coin value...
     for (int i = 0; i < numValues; i += 1) {
 
+      // If we've run out of this coin value, continue
       if (*(counts + i) == 0) continue;
 
+      // See where the next coin would go
       int value = *(values + i);
       int nextValue = (currentValue + value) % numHours;
 
+      // If there's already a coin there, continue
       if (*(clockState + nextValue)) continue;
 
+      // Place the coin
       *(currentSequence + currentSequenceIndex) = value;
       currentSequenceIndex += 1;
       *(clockState + nextValue) = true;
       *(counts + i) -= 1;
 
+      // Recurse
       vector<int*> recursedValues = getValidSequences(
         numHours,
         values,
@@ -63,8 +79,11 @@ vector<int*> getValidSequences(
         nextValue,
         currentSequenceIndex
       );
+
+      // Concatenate vectors
       returnValues.insert(returnValues.end(), recursedValues.begin(), recursedValues.end());
 
+      // Remove coin
       currentSequenceIndex -= 1;
       *(currentSequence + currentSequenceIndex) = 0;
       *(clockState + nextValue) = false;
@@ -76,7 +95,10 @@ vector<int*> getValidSequences(
 }
 
 // Gets vector of strings of valid coin sequences
-// TODO add other params
+// numHours  - number of hours on the clock
+// values    - coin values we have (must match with counts)
+// counts    - count of each coin value (must match with values)
+// numValues - number of different coin values we have
 vector<string> getValidSequences(
   int numHours,
   int *values,
@@ -85,11 +107,14 @@ vector<string> getValidSequences(
 ) {
 
   // Would a packed bit vector peform better?
+  // Initialize clock state to all false (there are no coins after all!)
   bool *clockState = new bool[numHours];
   for (int i = 0; i < numHours; i += 1) {
     *(clockState + i) = false;
   }
 
+  // Initialize currentSequence to all 0s so we can
+  // I'm not actually sure I need to do this...
   int* currentSequence  = new int[numHours];
   for (int i = 0; i < numHours; i += 1) {
     *(currentSequence + i) = 0;
@@ -107,6 +132,7 @@ vector<string> getValidSequences(
   );
 
   delete[] clockState;
+  delete[] currentSequence;
 
   // Convert to char vector
   vector<string> results (sequences.size());
@@ -121,6 +147,7 @@ vector<string> getValidSequences(
     string stringResult = result;
     results[i] = stringResult;
     delete[] result;
+    delete[] sequence;
   }
 
   return results;
@@ -147,7 +174,7 @@ int main() {
   cout << "Time: " << ((double)t) * 1000 * 1000 / CLOCKS_PER_SEC << "ns" << endl;
 
   for(int i = 0; i < values.size(); i += 1) {
-    cout << values[i] << endl; // Got ~200,000 ns
+    cout << values[i] << endl; // Got ~210,000 ns
   }
 
   getchar();

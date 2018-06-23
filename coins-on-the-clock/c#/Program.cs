@@ -20,7 +20,7 @@ namespace coinsOnTheClock
 
           long nanosecPerTick = 1000L*1000L*1000L / Stopwatch.Frequency;
 
-          Console.WriteLine("Elapsed " + (timer.ElapsedTicks * nanosecPerTick) + "ns"); // Got 2,232,860ns.
+          Console.WriteLine("Elapsed " + (timer.ElapsedTicks * nanosecPerTick) + "ns"); // Got ~1,600,000ns.
 
           foreach (string sequence in sequences) {
               System.Console.WriteLine(sequence);
@@ -124,6 +124,10 @@ namespace coinsOnTheClock
             return returnValues;
         }
 
+        // GetCoinName
+        // Gets char name of coin value
+        // coin - value of coin to get name for
+        // Throws argument exception if coin name is not found
         public static char GetCoinName(int coin) {
             switch(coin) {
                 case 1:

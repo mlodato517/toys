@@ -174,8 +174,6 @@ int main() {
   cout << "Time: " << ((double)t) * 1000 * 1000 / CLOCKS_PER_SEC << "ns" << endl;
 
   for(int i = 0; i < values.size(); i += 1) {
-    cout << values[i] << endl; // Got ~210,000 ns
+    cout << values[i] << endl; // Got ~110,000 ns
   }
-
-  getchar();
 }

@@ -27,7 +27,10 @@ namespace coinsOnTheClock
           }
         }
 
-        // Gets all valid coin sequences for the given numHours and coin array
+        // Gets valid coin sequences
+        // numHours - number of hours on our clock
+        // values   - int array of coin values to add to clock
+        // counts   - count of each coin value. Related to values
         public static List<string> GetValidSequences(int numHours, int[] values, int[] counts)
         {
             bool[] clockState = new bool[numHours];

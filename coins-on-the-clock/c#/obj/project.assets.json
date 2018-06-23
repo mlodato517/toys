@@ -670,11 +670,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mlodato\\toys\\coins-on-the-clock\\c#\\coinsOnTheClock.csproj",
+      "projectUniqueName": "c:\\Users\\mlodato\\toys\\coins-on-the-clock\\c#\\coinsOnTheClock.csproj",
       "projectName": "coinsOnTheClock",
-      "projectPath": "C:\\Users\\mlodato\\toys\\coins-on-the-clock\\c#\\coinsOnTheClock.csproj",
+      "projectPath": "c:\\Users\\mlodato\\toys\\coins-on-the-clock\\c#\\coinsOnTheClock.csproj",
       "packagesPath": "C:\\Users\\mlodato\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mlodato\\toys\\coins-on-the-clock\\c#\\obj\\",
+      "outputPath": "c:\\Users\\mlodato\\toys\\coins-on-the-clock\\c#\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

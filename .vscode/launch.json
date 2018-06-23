@@ -11,27 +11,26 @@
            "program": "${file}"
        },
         {
-            "name": ".NET Core Launch (console)",
+            "name": "dotnet current file",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build dotnet",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/coins-on-the-clock/c#/bin/Debug/netcoreapp2.0/coinsOnTheClock.dll",
+            "program": "${fileDirname}/bin/Debug/netcoreapp2.0/${fileBasenameNoExtension}.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/coins-on-the-clock/c#",
             // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
             "console": "internalConsole",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
-            "name": "(cpp) Launch",
+            "name": "cpp current file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/coins-on-the-clock/cpp/program.exe",
+            "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/coins-on-the-clock/cpp",
+            "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",
@@ -46,13 +45,13 @@
             "preLaunchTask": "build cpp"
         },
         {
-            "name": "(cpp gdb) Launch",
+            "name": "debug cpp current file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/coins-on-the-clock/cpp/program.exe",
+            "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/coins-on-the-clock/cpp",
+            "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",

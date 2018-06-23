@@ -112,7 +112,8 @@ def main ():
   start = time.time()
   sequences = GetValidSequences(numHours, coins, counts)
   end = 1000 * 1000 * 1000 * (time.time() - start)
-  print(f'{end} ns') # ~5,000,000 ns
+  print(f'{end} ns') # ~5,000,000 ns Python 3 64 bit
+                     # ~6,500,000 ns Python 3 32 bit
   print(sequences)
 
 main()

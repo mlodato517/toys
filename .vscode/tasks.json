@@ -12,7 +12,7 @@
         "reveal": "silent"
       },
       "options": {
-				"cwd": "${workspaceFolder}/coins-on-the-clock/c#",
+				"cwd": "${fileDirname}",
 			},
       "problemMatcher": "$msCompile"
     },
@@ -21,10 +21,10 @@
       "type": "shell",
       "command": "g++",
       "args": [
-          "-O3", "program.cpp", "-o", "program.exe"
+          "-O3", "${file}", "-o", "${fileBasenameNoExtension}.exe"
       ],
       "options": {
-				"cwd": "${workspaceFolder}/coins-on-the-clock/cpp",
+				"cwd": "${fileDirname}",
 			},
     },
     {
@@ -32,10 +32,10 @@
       "type": "shell",
       "command": "g++",
       "args": [
-          "-g", "program.cpp"
+          "-g", "${file}", "-o", "${fileBasenameNoExtension}.exe"
       ],
       "options": {
-				"cwd": "${workspaceFolder}/coins-on-the-clock/cpp",
+				"cwd": "${fileDirname}",
 			},
     },
   ]

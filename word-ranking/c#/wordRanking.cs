@@ -169,9 +169,6 @@ class Program
     static long GetPermutationsAheadOfWord(IEnumerable<char> lesserChars, string wordEnding, Dictionary<char, int> countOfCharacters) {
 
       long total = 0;
-
-      // There are numerator factorial ways to arrange characters.
-      // For each duplicate character, we have to divide by Factorial(count).
       foreach (char lesserChar in lesserChars) {
 
         // Let's pretend we swapped lesserChar to the front of wordEnding.
@@ -215,9 +212,7 @@ class Program
       if (number == 0L) return 1L;
 
       long returnValue = number;
-      for (long i = number - 1; i > 0; i -= 1) {
-        returnValue *= i;
-      }
+      for (long i = number - 1; i > 0; i -= 1) returnValue *= i;
 
       return returnValue;
     }

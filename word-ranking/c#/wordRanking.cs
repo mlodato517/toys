@@ -178,14 +178,14 @@ class Program
         // In "n choose m" math, we divide out duplicate items when
         // order doesn't matter. Do that here.
         long divisor = 1;
-        HashSet<char> duplicateCharsHandled = new HashSet<char>();
-        for (int j = 0 + 1; j < wordEnding.Length; j++) {
+        HashSet<char> processedChars = new HashSet<char>();
+        for (int i = 1; i < wordEnding.Length; i++) {
 
           // Don't process duplicate chars multiple times.
-          char remainingChar = wordEnding[j];
-          if (duplicateCharsHandled.Contains(remainingChar)) continue;
+          char remainingChar = wordEnding[i];
+          if (processedChars.Contains(remainingChar)) continue;
 
-          duplicateCharsHandled.Add(remainingChar);
+          processedChars.Add(remainingChar);
 
           // Need to check for > 0 because we decremented lesserChar
           // when we pretend swapped it to the front of wordEnding.

@@ -1,6 +1,7 @@
 # Morse Deletion
 
 ## Step One
+
 Given a morse string, find unique sequences of remaining tokens after removing a second string from the first. There are 3 Morse tokens:
 
 Dot (&)  

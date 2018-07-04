@@ -1,91 +1,87 @@
 # Morse Deletion
 
 ## Step One
-Given a string that has been converted to Morse code, find all of the possible and unique sequences of remaining tokens after removing the second message from the first.  There are 3 different types of tokens in the Morse code message.
+Given a morse string, find unique sequences of remaining tokens after removing a second string from the first. There are 3 Morse tokens:
 
-Dot (*)  
-Dash (-)  
-Blank (_)
+Dot (&)  
+Dash (%)  
+Blank ($)
 
-Every letter in the message is separated by a single blank character and every word is separated by 3 blank characters.
+Letters are separated by a blank character. Words are separated by 3 blanks.
 
 Example:  
-Given: AB
+Given: AB  
+`&%$%&&&`
 
-* `*-_-***`
+Remove: R  
+`&%&`
 
-Remove: R
+This can be done 6 ways:
 
-* `*-*`
+* `X X $ % X & &`
+* `X X $ % & X &`
+* `X X $ % & & X`
+* `X % $ X X & &`
+* `X % $ X & X &`
+* `X % $ X & & X`
 
-This can be done 6 different ways:
+But only 2 are unique:
 
-* `X X _ - X * *`
-* `X X _ - * X *`
-* `X X _ - * * X`
-* `X - _ X X * *`
-* `X - _ X * X *`
-* `X - _ X * * X`
+* `$%&&`
+* `%$&&`
 
-But this results in only 2 possible unique sequences of remaining tokens:
+Thus the answer is 2.
 
-* `_-**`
-* `-_**`
-
-So the final result for this example would be 2.
-
-Write a program that can calculate all of the deletion paths for removing one Morse code message from another. This program should be able to calculate all of the paths in the example below in under 10 seconds and return the total number of paths found.  This is a preliminary step for your program, for testing.
+Write a program that calculates all deletion paths.
 
 Given Hello World:  
-`****_*_*-**_*-**_---___*--_---_*-*_*-**_-**`
+`&&&&$&$&%&&$&%&&$%%%$$$&%%$%%%$&%&$&%&&$%&&`
 
 Remove: Help  
-`****_*_*-**_*--*`
+`&&&&$&$&%&&$&%%&`
 
 ANSWER: 1311
 
 ## Step two
 
-Find the possible deletion paths where you must remove a second message from the remaining tokens in the original message after removing the first phrase, including blank tokens. All remaining tokens would be kept in the same order to find a second phrase. Return all of the possible and unique sequences of remaining tokens after removing both phrases.
-
-In the example above where R is removed from AB notice that there are 6 delete paths but only 2 unique sequences of remaining tokens.
+Remove a second string after removing the first. Tokens should remain in order to find a second phrase. Return all unique sequences of remaining tokens after removing both phrases.
 
 Example:
 
 Given: ABCD  
-`*-_-***_-*-*_-**`
+`&%$%&&&$%&%&$%&&`
 
 Remove: ST  
-`***_-`
+`&&&$%`
 
 Then Remove: ZN  
-`--**_-*`
+`%%&&$%&`
 
-One solution path would look like:
+One path is:
 
 Start:  
-`* - _ - * * * _ - * - * _ - * *`  
+`& % $ % & & & $ % & % & $ % & &`  
 Remove ST:  
-`x - _ - x x * x x * - * _ - * *  `  
-Then Remove ZN:  
-`x x _ x x x x x x x - * x x x *`  
-The set of remaining characters:  
-`_ - * *`
+`x % $ % x x & x x & % & $ % & &`  
+Remove ZN:  
+`x x $ x x x x x x x % & x x x &`  
+Remaining characters:  
+`$ % & &`
 
-There are 5 sequences of remaining characters for this example:
+There are 5 unique sequences:
 
-* `_-**`
-* `_*-*`
-* `-_**`
-* `*_-*`
-* `*-_*`
+* `$%&&`
+* `$&%&`
+* `%$&&`
+* `&$%&`
+* `&%$&`
 
-Expand your program to find all of the possible sequences of remaining characters after removing 2 hidden Morse code messages from an original message.
+Have your code find all of possible sequences of remaining characters after removing 2 messages from the original.
 
 Given: The Star Wars Saga  
-`-_****_*___***_-_*-_*-*___*--_*-_*-*_***___***_*-_--*_*-`  
+`%$&&&&$&$$$&&&$%$&%$&%&$$$&%%$&%$&%&$&&&$$$&&&$&%$%%&$&%`  
 Remove: Yoda  
-`-*--_---_-**_*-`  
+`%&%%$%%%$%&&$&%`  
 And Remove: Leia  
-`*-**_*_**_*-`  
+`&%&&$&$&&$&%`  
 Expected Answer: 11474

@@ -5,105 +5,92 @@ using System.Diagnostics;
 class Program
 {
     static void Main(string[] args)
-    {
-        Debug.Assert(
-            CountMorseDeletions(
-                "&%$%&&&",
-                new [] {"&%&"}
-            ) == 2
-        );
-        Debug.Assert(
-            CountMorseDeletions(
-                "&&&&$&$&%&&$&%&&$%%%$$$&%%$%%%$&%&$&%&&$%&&",
-                new [] {"&&&&$&$&%&&$&%%&"}
-            ) == 1311
-        );
+  {
+    CheckAssertions();
 
-        Debug.Assert(
-            CountMorseDeletions(
-                "&%$%&&&$%&%&$%&&",
-                new [] { "&&&$%", "%%&&$%&" }
-            ) == 5
-        );
-        Debug.Assert(
-            CountMorseDeletions(
-                "%$&&&&$&$$$&&&$%$&%$&%&$$$&%%$&%$&%&$&&&$$$&&&$&%$%%&$&%",
-                new [] { "%&%%$%%%$%&&$&%", "&%&&$&$&&$&%" }
-            ) == 11474
-        );
+    Stopwatch watch = new Stopwatch();
+    watch.Start();
+    CountMorseDeletions(
+        "%$&&&&$&$$$&&&$%$&%$&%&$$$&%%$&%$&%&$&&&$$$&&&$&%$%%&$&%",
+        new[] { "%&%%$%%%$%&&$&%", "&%&&$&$&&$&%" }
+    );
+    watch.Stop();
+    Console.WriteLine(watch.ElapsedMilliseconds); // 1100 ms
+  }
 
-        Debug.Assert(
-            CountMorseDeletions(
-                "$%&$%&",
-                new [] { "$", "%", "&" }
-            ) == 5
-        );
+  private static void CheckAssertions()
+  {
+    Debug.Assert(
+                CountMorseDeletions(
+                    "&%$%&&&",
+                    new[] { "&%&" }
+                ) == 2
+            );
+    Debug.Assert(
+        CountMorseDeletions(
+            "&&&&$&$&%&&$&%&&$%%%$$$&%%$%%%$&%&$&%&&$%&&",
+            new[] { "&&&&$&$&%&&$&%%&" }
+        ) == 1311
+    );
 
-        Stopwatch watch = new Stopwatch();
-        watch.Start();
+    Debug.Assert(
+        CountMorseDeletions(
+            "&%$%&&&$%&%&$%&&",
+            new[] { "&&&$%", "%%&&$%&" }
+        ) == 5
+    );
+    Debug.Assert(
         CountMorseDeletions(
             "%$&&&&$&$$$&&&$%$&%$&%&$$$&%%$&%$&%&$&&&$$$&&&$&%$%%&$&%",
-            new [] { "%&%%$%%%$%&&$&%", "&%&&$&$&&$&%" }
-        );
-        watch.Stop();
-        Console.WriteLine(watch.ElapsedMilliseconds); // 1061 ms
+            new[] { "%&%%$%%%$%&&$&%", "&%&&$&$&&$&%" }
+        ) == 11474
+    );
 
-        // NEED MORE UNIT TESTS
-    }
+    Debug.Assert(
+        CountMorseDeletions(
+            "$%&$%&",
+            new[] { "$", "%", "&" }
+        ) == 5
+    );
 
-    // CountMorseDeletions
-    // Gets number of unique strings resulting from removing each string
-    // in delStrs from str.
-    // str     - string to delete other strings from
-    // delStrs - enumerable of strings to delete from str
-    static int CountMorseDeletions(string str, IEnumerable<string> delStrs) {
+    // NEED MORE
+  }
 
-        // Make enumerable of the single str
-        IEnumerable<string> resultEnumerable = new List<string>(new [] { str });
+  // CountMorseDeletions
+  // Gets number of unique strings resulting from removing each string
+  // in delStrs from str.
+  // str     - string to delete other strings from
+  // delStrs - enumerable of strings to delete from str
+  static int CountMorseDeletions(string str, IEnumerable<string> delStrs) {
 
-        // Delete delStrs from str. That will result in an
-        // enumerable of strings. Delete the next string in delStrs from
+        // Make HashSet of the single str
+        HashSet<string> result = new HashSet<string>(new string[] { str });
+
+        // Delete delStrs from str. That will result in a
+        // HashSet of strings. Delete the next string in delStrs from
         // THAT enumerable. Repeat ad nauseam.
-        foreach (string delStr in delStrs) {
-            resultEnumerable = GetMorseDeletions(resultEnumerable, delStr);
-        }
+        foreach (string delStr in delStrs) result = GetUniqueMorseDeletions(result, delStr);
 
-        // Once we've got our enumerable of all strings resulting from removing
-        // all delStrs from str, we then have to weed out
-        // duplicates and return the count.
-        HashSet<string> uniqueDeletionStrings = new HashSet<string>();
-        foreach (string resultString in resultEnumerable) {
-            if (uniqueDeletionStrings.Contains(resultString)) continue;
-            uniqueDeletionStrings.Add(resultString);
-        }
-        return uniqueDeletionStrings.Count;
+        return result.Count;
     }
 
-    // GetMorseDeletions
+    // GetUniqueMorseDeletions
     // Gets the strings resulting from removing delStr
     // from each string in strs.
-    // strs   - enumerable of strings to delete delStr from
+    // strs   - unique collection of strings to delete delStr from
     // delStr - string to delete from each string in strs
-    static List<string> GetMorseDeletions(IEnumerable<string> strs, string delStr) {
-        List<string> results = new List<string>();
+    static HashSet<string> GetUniqueMorseDeletions(HashSet<string> strs, string delStr) {
 
-        // Only find deletions for unique strs and only store unique results.
-        HashSet<string> uniqueStrs = new HashSet<string>();
         HashSet<string> uniqueResults = new HashSet<string>();
 
-        // Delete delStr from each unique str and store unique results.
+        // Delete delStr from each str.
         foreach (string str in strs) {
-            if (uniqueStrs.Contains(str)) continue;
-            uniqueStrs.Add(str);
-
             foreach (string result in GetDeletionStrings(str, delStr)) {
                 if (uniqueResults.Contains(result)) continue;
                 uniqueResults.Add(result);
-
-                results.Add(result);
             }
         }
-        return results;
+        return uniqueResults;
     }
 
     // LastIndexToDeleteFrom
@@ -137,8 +124,9 @@ class Program
 
         // If there's nothing left to delete, we've found a result.
         // Append what's left of str first.
-        if (delStr.Length == 0)  yield return result + str;
-
+        if (delStr.Length == 0) {
+            yield return result + str;
+        }
         else {
 
             // LastIndexToDeleteFrom tells us that if i > lastIndexToDeleteFrom,

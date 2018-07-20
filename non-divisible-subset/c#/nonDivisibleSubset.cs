@@ -1,56 +1,75 @@
 ﻿using System;
+using System.Diagnostics;
+
 class Program
 {
-    static void Main(string[] args)
-    {
-        Console.WriteLine(nonDivisibleSubset(1, new [] {1}) + " should be 1");
-        Console.WriteLine(nonDivisibleSubset(1, new [] {1, 2}) + " should be 1");
+    static void Main(string[] args) {
+        Debug.Assert(nonDivisibleSubset(1, new [] {1}) == 1);
+        Debug.Assert(nonDivisibleSubset(1, new [] {1, 2}) == 1);
 
-        Console.WriteLine(nonDivisibleSubset(1, new [] {1, 2, 3, 4, 5, 6, 7, 8, 9}) + " should be 1");
-        Console.WriteLine(nonDivisibleSubset(1, new [] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}) + " should be 1");
+        Debug.Assert(nonDivisibleSubset(1, new [] {1, 2, 3, 4, 5, 6, 7, 8, 9}) == 1);
+        Debug.Assert(nonDivisibleSubset(1, new [] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}) == 1);
 
-        Console.WriteLine(nonDivisibleSubset(2, new [] {1, 2, 3, 4, 5, 6, 7, 8, 9}) + " should be 2");
-        Console.WriteLine(nonDivisibleSubset(2, new [] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}) + " should be 2");
+        Debug.Assert(nonDivisibleSubset(2, new [] {1, 2, 3, 4, 5, 6, 7, 8, 9}) == 2);
+        Debug.Assert(nonDivisibleSubset(2, new [] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}) == 2);
 
-        Console.WriteLine(nonDivisibleSubset(2, new [] {2, 4, 6, 8, 10}) + " should be 1");
-        Console.WriteLine(nonDivisibleSubset(2, new [] {2, 4, 6, 8}) + " should be 1");
+        Debug.Assert(nonDivisibleSubset(2, new [] {2, 4, 6, 8, 10}) == 1);
+        Debug.Assert(nonDivisibleSubset(2, new [] {2, 4, 6, 8}) == 1);
 
-        Console.WriteLine(nonDivisibleSubset(7, new [] {1, 2, 3}) + " should be 3");
-        Console.WriteLine(nonDivisibleSubset(7, new [] {1, 2}) + " should be 2");
+        Debug.Assert(nonDivisibleSubset(7, new [] {1, 2, 3}) == 3);
+        Debug.Assert(nonDivisibleSubset(7, new [] {1, 2}) == 2);
 
-        Console.WriteLine(nonDivisibleSubset(7, new [] {3, 4}) + " should be 1");
-        Console.WriteLine(nonDivisibleSubset(7, new [] {4, 5}) + " should be 2");
+        Debug.Assert(nonDivisibleSubset(7, new [] {3, 4}) == 1);
+        Debug.Assert(nonDivisibleSubset(7, new [] {4, 5}) == 2);
 
-        Console.WriteLine(nonDivisibleSubset(6, new [] {3, 6, 12, 18}) + " should be 2");
-        Console.WriteLine(nonDivisibleSubset(6, new [] {3, 6, 12}) + " should be 2");
+        Debug.Assert(nonDivisibleSubset(6, new [] {3, 6, 12, 18}) == 2);
+        Debug.Assert(nonDivisibleSubset(6, new [] {3, 6, 12}) == 2);
 
-        Console.WriteLine(nonDivisibleSubset(5, new [] {1, 2, 3, 4, 5}) + " should be 3");
-        Console.WriteLine(nonDivisibleSubset(5, new [] {2, 3, 4, 5}) + " should be 3");
+        Debug.Assert(nonDivisibleSubset(5, new [] {1, 2, 3, 4, 5}) == 3);
+        Debug.Assert(nonDivisibleSubset(5, new [] {2, 3, 4, 5}) == 3);
     }
 
-    // Complete the nonDivisibleSubset function below.
+    // nonDivisibleSubset
+    // Given a non-factor, k, and a set of unique ints, S,
+    // finds the magnitude of the largest subset of S, S',
+    // Such that for each x, y in S', k does not divide (x + y).
+    // k - non-factor. Sums of pairs of elements of S' must not be divisible by this
+    // S - array of unique ints.
     static int nonDivisibleSubset(int k, int[] S) {
+
+        // Okay here's the idea. (a + b) % c is congruent
+        // to (a % c) + (b % c). Therefore, (assuming positive remainders)
+        // c | (a + b) <=> (a % c) + (b % c) == 0 or c.
+        // First, get the count of each possible modulus of k.
         int[] remainders = new int[k];
         foreach (int s in S) {
             remainders[s % k] += 1;
         }
 
-        // remainders[0] has count of factors of k.
-        // If we have any, we can safely take one from the bucket.
+        // Now, the interesting thing here is that, because we're
+        // only adding pairs of numbers, (a % c) + (b % c) will only be
+        // 0 or c if both are 0 or one is n and the other is (c - n).
+        // That means we can greedily compare each c and (c - n) and
+        // just take the larger count.
+
+        // We can always take one from the bucket of factors of k
+        // because if (a % c) == 0, then k | (a + b) iff
+        // (b % c) == 0 also.
         int count = remainders[0] > 0 ? 1 : 0;
-        bool kEven = (k & 1) == 0;
 
-        // Start at 1 to get other numbers.
-        for (int i = 1; i <= k / 2; i += 1) {
+        // If k is even, we can take one from the middle bucket
+        // because if (a % c) == k / 2, then k | (a + b) iff
+        // (b % c) == k/2 also.
+        if ((k & 1) == 0 && remainders[k / 2] > 0) count += 1;
 
-            // If we're dividing by, let's say 6
-            // and we're looking at the bucket of things with remainder 3,
-            // we know we can always take 1 but we can only take 1.
-            if (kEven && i == k / 2 && remainders[i] > 0) count += 1;
+        // Compare n and k - n until we get to the midpoint.
+        // Note that if k is odd, then (k-1) / 2 == k / 2.
+        int midpoint = (k - 1) / 2;
+        for (int i = 1; i <= midpoint; i += 1) {
 
-            // Otherwise, compare remainders[i] to it's "compliment"
-            // and take the larger
-            else count += remainders[i] >= remainders[k - i]
+            // Compare each n with its k-n and greedily
+            // take the larger
+            count += remainders[i] >= remainders[k - i]
                 ? remainders[i]
                 : remainders[k - i];
         }

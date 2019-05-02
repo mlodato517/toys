@@ -163,23 +163,16 @@ int main()
   int counts[] = {4, 4, 4};
   int numValues = 3;
 
-  vector<string> values;
-
   // Get the number of ticks it takes for 1000 calculations.
   clock_t t;
   t = clock();
   for (int i = 0; i < 1000; i += 1)
   {
-    values = getValidSequences(numHours, &coins[0], &counts[0], numValues);
+    getValidSequences(numHours, &coins[0], &counts[0], numValues);
   }
   t = clock() - t;
 
-  // Multiple by 1,000,000 to get ticks for 1e9 calculations.
-  // Divide by ticks/sec to get ns/calculation.
-  cout << "Time: " << ((double)t) * 1000 * 1000 / CLOCKS_PER_SEC << "ns" << endl;
-
-  for (int i = 0; i < values.size(); i += 1)
-  {
-    cout << values[i] << endl; // Got ~110,000 ns
-  }
+  // Divide by CLOCKS_PER_SEC to get seconds for 1000 calculations.
+  // Multiple by 1000 to get ms for 1000 calculations.
+  cout << ((double)t) * 1000 / CLOCKS_PER_SEC << endl;
 }

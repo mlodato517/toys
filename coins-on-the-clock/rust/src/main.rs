@@ -6,11 +6,13 @@ fn main() {
     let counts = [4, 4, 4];
 
     let now = time::precise_time_ns();
-    let valid_sequences = get_valid_sequences(num_hours, &coins, &counts);
+    for _ in 0..1000 {
+        get_valid_sequences(num_hours, &coins, &counts);
+    }
     let now2 = time::precise_time_ns();
-    let diff = (now2 - now) / 1000;
+    let diff = (now2 - now) / 1000000;
 
-    println!("DONE: {} ms, Values = {:?}", diff, valid_sequences);
+    println!("{}", diff);
 }
 
 fn get_valid_sequences(num_hours: usize, coins: &[usize], counts: &[usize]) -> Vec<String> {

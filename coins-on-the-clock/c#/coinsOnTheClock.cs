@@ -117,7 +117,6 @@ namespace coinsOnTheClock
 
           // Remove the coin
           currentSequenceIndex -= 1;
-          currentSequence[currentSequenceIndex] = 0;
           clockState[nextValue] = false;
           counts[i] += 1;
         }

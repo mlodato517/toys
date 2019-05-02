@@ -67,7 +67,6 @@ def _GetValidSequences(
 
             # Remove the coin from the clock to try the next coin
             currentIndex -= 1
-            currentSequence[currentIndex] = None
             clockState[nextValue] = False
             counts[i] += 1
 

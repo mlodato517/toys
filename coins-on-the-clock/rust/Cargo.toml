@@ -1,0 +1,8 @@
+[package]
+name = "coins-on-the-clock"
+version = "0.1.0"
+authors = ["Mark Lodato <mark@gnar.dog>"]
+edition = "2018"
+
+[dependencies]
+time = "0.1"

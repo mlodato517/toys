@@ -1,4 +1,5 @@
 *.exe
-**/c#/bin/*
-**/c#/obj/*
+**/c#/bin
+**/c#/obj
 **/settings.json
+**/rust/target

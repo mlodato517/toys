@@ -101,22 +101,24 @@ namespace coinsOnTheClock
 
           // Add the coin to our clock
           currentSequence[currentSequenceIndex] = value;
-          currentSequenceIndex += 1;
           clockState[nextValue] = true;
           counts[i] -= 1;
 
-          returnValues.AddRange(GetValidSequences(
+          List<int[]> sequences = GetValidSequences(
               numHours,
               values,
               counts,
               currentSequence,
               clockState,
               nextValue,
-              currentSequenceIndex
-          ));
+              currentSequenceIndex + 1
+          );
+          if (sequences.Count > 0)
+          {
+            returnValues.AddRange(sequences);
+          }
 
           // Remove the coin
-          currentSequenceIndex -= 1;
           clockState[nextValue] = false;
           counts[i] += 1;
         }

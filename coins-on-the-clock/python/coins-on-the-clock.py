@@ -49,24 +49,25 @@ def _GetValidSequences(
 
             # Place the coin on the clock
             currentSequence[currentIndex] = coinValue
-            currentIndex += 1
             clockState[nextValue] = True
             counts[i] -= 1
 
             # Recurse
-            returnValues.extend(_GetValidSequences(
+            sequences = _GetValidSequences(
                 numHours,
                 coins,
                 counts,
                 clockState,
                 currentSequence,
                 nextValue,
-                currentIndex,
+                currentIndex + 1,
                 coinLength
-            ))
+            )
+
+            if sequences:
+                returnValues.extend(sequences)
 
             # Remove the coin from the clock to try the next coin
-            currentIndex -= 1
             clockState[nextValue] = False
             counts[i] += 1
 

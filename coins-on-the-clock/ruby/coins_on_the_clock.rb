@@ -1,5 +1,13 @@
 def get_valid_sequences(num_hours, values, counts)
-  sequences = _get_valid_sequences(num_hours, values, counts, [], [], 0)
+  sequences = _get_valid_sequences(
+    num_hours,
+    values,
+    counts,
+    Array.new(num_hours, 0),
+    Array.new(num_hours, false),
+    0,
+    0
+  )
 
   sequences.map { |s| s.map { |i| get_coin_name(i) }.join('') }
 end
@@ -10,12 +18,14 @@ def _get_valid_sequences(
   counts,
   current_sequence,
   clock_state,
-  current_value
+  current_value,
+  current_sequence_index
 )
-  return [current_sequence.dup] if current_sequence.length == num_hours
+  return [current_sequence.dup] if current_sequence_index == num_hours
 
   return_values = []
-  (0...counts.length).each do |i|
+  i = -1
+  while ((i += 1) < counts.length) do
     next if counts[i] == 0
 
     next_value = (current_value + values[i]) % num_hours
@@ -24,20 +34,21 @@ def _get_valid_sequences(
 
     clock_state[next_value] = true
     counts[i] -= 1
-    current_sequence.push values[i]
+    current_sequence[current_sequence_index] = values[i]
 
-    return_values.concat(_get_valid_sequences(
+    sequences = _get_valid_sequences(
       num_hours,
       values,
       counts,
       current_sequence,
       clock_state,
-      next_value
-    ))
+      next_value,
+      current_sequence_index + 1
+    )
+    return_values.concat(sequences) if sequences.length > 0
 
     clock_state[next_value] = false
     counts[i] += 1
-    current_sequence.pop
   end
 
   return_values
@@ -66,5 +77,5 @@ start = Time.now
 stop = Time.now
 
 # stop - start is time in seconds.
-# Multipley by 1000 to get ms for 1000 calculations.
+# Multiply by 1000 to get ms for 1000 calculations.
 puts ((stop - start) * 1_000)

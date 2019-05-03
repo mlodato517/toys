@@ -1,10 +1,16 @@
-def get_valid_sequences(
+def get_valid_sequences(num_hours, values, counts)
+  sequences = _get_valid_sequences(num_hours, values, counts, [], [], 0)
+
+  sequences.map { |s| s.map { |i| get_coin_name(i) }.join('') }
+end
+
+def _get_valid_sequences(
   num_hours,
   values,
   counts,
-  current_sequence = [],
-  clock_state = [],
-  current_value = 0
+  current_sequence,
+  clock_state,
+  current_value
 )
   return [current_sequence.dup] if current_sequence.length == num_hours
 
@@ -20,7 +26,7 @@ def get_valid_sequences(
     counts[i] -= 1
     current_sequence.push values[i]
 
-    return_values.concat(get_valid_sequences(
+    return_values.concat(_get_valid_sequences(
       num_hours,
       values,
       counts,
@@ -54,12 +60,11 @@ end
 modulo = 12
 coins = [ 1, 5, 10 ]
 counts = [ 4, 4, 4 ]
-puts "Modulo=#{modulo}\ncoins=#{coins.join(", ")}"
 
 start = Time.now
-sequences = get_valid_sequences(modulo, coins, counts)
+1000.times { get_valid_sequences(modulo, coins, counts) }
 stop = Time.now
 
-puts "Elapsed #{((stop - start) * 1_000_000_000).round} ns (ish)"
-
-pp sequences.map { |list| list.map { |value| get_coin_name(value) }.join("") }
+# stop - start is time in seconds.
+# Multipley by 1000 to get ms for 1000 calculations.
+puts ((stop - start) * 1_000)

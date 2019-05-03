@@ -10,6 +10,8 @@ cs_ms = `dotnet run -c Release --project c#/`
 
 rust_ms = `cd rust && cargo run --release rust/src/main.rs && cd ../`
 
+js_ms = `node js/coins_on_the_clock.js`
+
 puts "OUTPUT (ms for 1000 iterations):"
 [
   [ "python", python_ms ],
@@ -17,4 +19,5 @@ puts "OUTPUT (ms for 1000 iterations):"
   [ "ruby", ruby_ms ],
   [ "cs", cs_ms ],
   [ "rust", rust_ms ],
+  [ "js", js_ms ],
 ].sort_by { |_, ms| ms.to_f }.each { |lang, ms| puts "#{lang}:\t#{ms}" }

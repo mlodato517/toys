@@ -12,6 +12,8 @@ rust_ms = `cd rust && cargo run --release rust/src/main.rs && cd ../`
 
 js_ms = `node js/coins_on_the_clock.js`
 
+go_ms = `go run go/coins_on_the_clock.go`
+
 puts "OUTPUT (ms for 1000 iterations):"
 [
   [ "python", python_ms ],
@@ -20,4 +22,5 @@ puts "OUTPUT (ms for 1000 iterations):"
   [ "cs", cs_ms ],
   [ "rust", rust_ms ],
   [ "js", js_ms ],
+  [ "go", go_ms ],
 ].sort_by { |_, ms| ms.to_f }.each { |lang, ms| puts "#{lang}:\t#{ms}" }

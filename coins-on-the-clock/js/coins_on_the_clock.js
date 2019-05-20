@@ -45,7 +45,7 @@ function _getValidSequences(
       nextValue,
       currentSequenceIndex + 1
     );
-    returnValues.push(...sequences);
+    if (sequences.length) returnValues.push(...sequences);
 
     clockState[nextValue] = 0;
     counts[i] += 1;

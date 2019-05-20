@@ -77,7 +77,6 @@ vector<int *> getValidSequences(
 
       // Place the coin
       *(currentSequence + currentSequenceIndex) = value;
-      currentSequenceIndex += 1;
       *(clockState + nextValue) = true;
       *(counts + i) -= 1;
 
@@ -90,13 +89,12 @@ vector<int *> getValidSequences(
           currentSequence,
           clockState,
           nextValue,
-          currentSequenceIndex);
+          currentSequenceIndex + 1);
 
       // Concatenate vectors
       returnValues.insert(returnValues.end(), recursedValues.begin(), recursedValues.end());
 
       // Remove coin
-      currentSequenceIndex -= 1;
       *(clockState + nextValue) = false;
       *(counts + i) += 1;
     }

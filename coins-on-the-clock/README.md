@@ -36,6 +36,14 @@ Install [python3](https://www.python.org/downloads/). Ensure there is an executa
 
 Install [nodejs](https://nodejs.org/en/).
 
+### Go
+
+Install [go](https://golang.org/doc/install#install).
+
+### Kotlin
+
+Install [kotlin](https://kotlinlang.org/docs/tutorials/command-line.html).
+
 ## Testing all the languages
 
 While in this directory, run `ruby test-all.rb`.

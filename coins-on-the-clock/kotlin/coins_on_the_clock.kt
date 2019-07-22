@@ -14,12 +14,14 @@ fun main(args: Array<String>) {
 }
 
 fun getValidSequences(numHours: Int, values: IntArray, counts: IntArray): List<String> {
-  val sequences = getValidSequences(
+  val sequences = mutableListOf<IntArray>()
+  getValidSequences(
     numHours,
     values,
     counts,
     IntArray(numHours),
     BooleanArray(numHours),
+    sequences,
     0,
     0
   )
@@ -33,11 +35,10 @@ fun getValidSequences(
   counts: IntArray,
   currentSequence: IntArray,
   clockState: BooleanArray,
+  returnValues: MutableList<IntArray>,
   currentValue: Int,
   currentSequenceIndex: Int
-): MutableList<IntArray> {
-  val returnValues = mutableListOf<IntArray>()
-
+) {
   if (currentSequenceIndex == numHours) {
     returnValues.add(currentSequence.copyOf())
   } else {
@@ -55,25 +56,21 @@ fun getValidSequences(
       clockState[nextValue] = true
       counts[i] -= 1
 
-      val sequences = getValidSequences(
-          numHours,
-          values,
-          counts,
-          currentSequence,
-          clockState,
-          nextValue,
-          currentSequenceIndex + 1
+      getValidSequences(
+        numHours,
+        values,
+        counts,
+        currentSequence,
+        clockState,
+        returnValues,
+        nextValue,
+        currentSequenceIndex + 1
       )
-      for (sequence in sequences) {
-        returnValues.add(sequence)
-      }
 
       clockState[nextValue] = false
       counts[i] += 1
     }
   }
-
-  return returnValues
 }
 
 fun getCoinName(i: Int): Char {

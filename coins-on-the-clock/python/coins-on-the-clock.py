@@ -9,6 +9,7 @@ numHours        - Int. Number of hours on the clock
 coins           - Array of ints. Must be matched with counts. Gives value of each coin
 counts          - Array of ints. Must be matched with coins. Gives count of each coin
 clockState      - Array of bools. Lists which clock hours have coins
+returnValues    - Reference to a list to push solutions onto
 currentSequence - List of ints. Current sequence of coins placed
 currentValue    - Int. Current value of clock we're on
 currentIndex    - Int. Current index of currentSequence we're on
@@ -21,13 +22,12 @@ def _GetValidSequences(
     coins,
     counts,
     clockState,
+    returnValues,
     currentSequence,
     currentValue,
     currentIndex,
     coinLength
 ):
-    returnValues = []
-
     # If we have numHours coins in our sequence, we've
     # found a solution. Add it to returnValues.
     if (currentIndex == numHours):
@@ -58,20 +58,16 @@ def _GetValidSequences(
                 coins,
                 counts,
                 clockState,
+                returnValues,
                 currentSequence,
                 nextValue,
                 currentIndex + 1,
                 coinLength
             )
 
-            if sequences:
-                returnValues.extend(sequences)
-
             # Remove the coin from the clock to try the next coin
             clockState[nextValue] = False
             counts[i] += 1
-
-    return returnValues
 
 
 '''
@@ -104,11 +100,13 @@ def GetValidSequences(numHours, coins, counts):
     clockState = [False] * numHours
     currentSequence = [None] * numHours
 
-    sequences = _GetValidSequences(
+    sequences = []
+    _GetValidSequences(
         numHours,
         coins,
         counts,
         clockState,
+        sequences,
         currentSequence,
         0,
         0,

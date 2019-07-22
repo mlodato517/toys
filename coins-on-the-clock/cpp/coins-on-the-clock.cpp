@@ -30,31 +30,28 @@ char getCoinName(int value)
 // numValues            - number of different coin values we have
 // currentSequence      - array of coin values we've placed
 // clockState           - for each clock hour, true if a coin is on it
+// returnValues         - reference to vector for pushing complete sequences
 // currentValue         - current clock hour we're on
 // currentSequenceIndex - index of currentSequence we're on
-vector<int *> getValidSequences(
+void getValidSequences(
     int numHours,
     int *values,
     int *counts,
     int numValues,
     int *currentSequence,
     bool *clockState,
+    vector<int *> *returnValues,
     int currentValue,
     int currentSequenceIndex)
 {
-  vector<int *> returnValues;
-
   // If we're on the last hour, we have a valid sequence
   if (currentSequenceIndex == numHours)
   {
 
     // Copy the array and push it onto the vector
     int *copiedSequence = new int[numHours];
-    for (int i = 0; i < numHours; i += 1)
-    {
-      *(copiedSequence + i) = *(currentSequence + i);
-    }
-    returnValues.push_back(copiedSequence);
+    memcpy(copiedSequence, currentSequence, numHours * sizeof (int));
+    returnValues->push_back(copiedSequence);
   }
   else
   {
@@ -81,26 +78,22 @@ vector<int *> getValidSequences(
       *(counts + i) -= 1;
 
       // Recurse
-      vector<int *> recursedValues = getValidSequences(
+      getValidSequences(
           numHours,
           values,
           counts,
           numValues,
           currentSequence,
           clockState,
+          returnValues,
           nextValue,
           currentSequenceIndex + 1);
-
-      // Concatenate vectors
-      returnValues.insert(returnValues.end(), recursedValues.begin(), recursedValues.end());
 
       // Remove coin
       *(clockState + nextValue) = false;
       *(counts + i) += 1;
     }
   }
-
-  return returnValues;
 }
 
 // Gets vector of strings of valid coin sequences
@@ -119,13 +112,15 @@ vector<string> getValidSequences(
   bool *clockState = new bool[numHours]();
   int *currentSequence = new int[numHours];
 
-  vector<int *> sequences = getValidSequences(
+  vector<int *> sequences;
+  getValidSequences(
       numHours,
       values,
       counts,
       numValues,
       currentSequence,
       clockState,
+      &sequences,
       0,
       0);
 

@@ -13,8 +13,8 @@ class Program
     TestCountStringSubsequence(new SequenceCounter(CountStringSubsequence));
     TestCountStringSubsequence(new SequenceCounter(CountStringSubsequenceDynamic));
     TestCountStringSubsequence(new SequenceCounter(CountStringSubsequenceDynamic1D));
-    TestDataSet(new SequenceCounter(CountStringSubsequenceDynamic), "C-small-practice.in");
-    TestDataSet(new SequenceCounter(CountStringSubsequenceDynamic), "C-large-practice.in");
+    TestDataSet(new SequenceCounter(CountStringSubsequenceDynamic1D), "C-small-practice.in");
+    TestDataSet(new SequenceCounter(CountStringSubsequenceDynamic1D), "C-large-practice.in");
   }
 
   private static void TestDataSet(SequenceCounter sequenceCounter, string path)
@@ -31,7 +31,7 @@ class Program
   private static void TestCountStringSubsequence(SequenceCounter sequenceCounter)
   {
     // string[] sources = {"abc", "aabc", "abbc", "abcc"};
-    // string[] targets = {"abc", "", "a", "ab", "bc", "ac", "c"};
+    // string[] targets = {"", "a", "b", "c", "d", "ab", "bc", "ac", "abc"};
     // foreach (string source in sources) {
     //   foreach (string target in targets) {
     //     Console.WriteLine(
@@ -266,19 +266,15 @@ class Program
     if (target.Length == 0 || source.Length == 0) return "0000";
 
     ulong[] counts = new ulong[source.Length];
+    Array.Fill(counts, (ulong)1);
 
-    int previousMatchIndex = source.Length;
+    int previousMatchIndex = source.Length - 1;
     for (int t_i = target.Length - 1; t_i >= 0; t_i -= 1)
     {
       bool foundMatch = false;
       ulong previouslyRecordedValue = 0;
-      ulong replacedValue = previousMatchIndex == source.Length ? 1 : counts[previousMatchIndex];
-      for (int s_i = previousMatchIndex - 1; s_i >= 0; s_i -= 1)
+      for (int s_i = previousMatchIndex; s_i >= 0; s_i -= 1)
       {
-        // Record the value we're replacing.
-        if (counts[s_i] > replacedValue) replacedValue = counts[s_i];
-
-        // If we don't have a match, move on.
         if (source[s_i] != target[t_i])
         {
           if (!foundMatch) previousMatchIndex -= 1;
@@ -288,9 +284,8 @@ class Program
         {
           foundMatch = true;
 
-          ulong newValue = previouslyRecordedValue + replacedValue;
-          counts[s_i] = newValue;
-          previouslyRecordedValue = newValue;
+          counts[s_i] += previouslyRecordedValue;
+          previouslyRecordedValue = counts[s_i];
         }
       }
     }

@@ -12,6 +12,7 @@ class Program
     TestBinarySearch();
     TestCountStringSubsequence(new SequenceCounter(CountStringSubsequence));
     TestCountStringSubsequence(new SequenceCounter(CountStringSubsequenceDynamic));
+    TestCountStringSubsequence(new SequenceCounter(CountStringSubsequenceDynamic1D));
     TestDataSet(new SequenceCounter(CountStringSubsequenceDynamic), "C-small-practice.in");
     TestDataSet(new SequenceCounter(CountStringSubsequenceDynamic), "C-large-practice.in");
   }
@@ -257,5 +258,43 @@ class Program
     }
 
     return (counts[0, 0] % 10000).ToString("D4");
+  }
+
+  // Reuse the same array each time
+  static string CountStringSubsequenceDynamic1D(string source, string target)
+  {
+    if (target.Length == 0 || source.Length == 0) return "0000";
+
+    ulong[] counts = new ulong[source.Length];
+
+    int previousMatchIndex = source.Length;
+    for (int t_i = target.Length - 1; t_i >= 0; t_i -= 1)
+    {
+      bool foundMatch = false;
+      ulong previouslyRecordedValue = 0;
+      ulong replacedValue = previousMatchIndex == source.Length ? 1 : counts[previousMatchIndex];
+      for (int s_i = previousMatchIndex - 1; s_i >= 0; s_i -= 1)
+      {
+        // Record the value we're replacing.
+        if (counts[s_i] > replacedValue) replacedValue = counts[s_i];
+
+        // If we don't have a match, move on.
+        if (source[s_i] != target[t_i])
+        {
+          if (!foundMatch) previousMatchIndex -= 1;
+          counts[s_i] = previouslyRecordedValue;
+        }
+        else
+        {
+          foundMatch = true;
+
+          ulong newValue = previouslyRecordedValue + replacedValue;
+          counts[s_i] = newValue;
+          previouslyRecordedValue = newValue;
+        }
+      }
+    }
+
+    return (counts[0] % 10000).ToString("D4");
   }
 }

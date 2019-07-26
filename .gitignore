@@ -1,5 +1,4 @@
 *.exe
-*.csproj
 **/bin
 **/obj
 **/settings.json

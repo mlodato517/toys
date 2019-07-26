@@ -4,24 +4,32 @@
   {
     if (target.Length == 0 || source.Length == 0) return "0000";
 
+    // Create one array the length of source and fill it with 1s
     ulong[] counts = new ulong[source.Length];
     System.Array.Fill(counts, (ulong)1);
 
-    int previousMatchIndex = source.Length - 1;
+    // Keep track of the first index we got a match on the previous loop because
+    // future iterations can start one to the left of that index.
+    int firstMatchPreviousLoopIndex = source.Length;
     for (int t_i = target.Length - 1; t_i >= 0; t_i -= 1)
     {
+      // Flag for recording our first match of each loop
       bool foundMatch = false;
       ulong previouslyRecordedValue = 0;
-      for (int s_i = previousMatchIndex; s_i >= 0; s_i -= 1)
+      for (int s_i = firstMatchPreviousLoopIndex - 1; s_i >= 0; s_i -= 1)
       {
         if (source[s_i] != target[t_i])
         {
-          if (!foundMatch) previousMatchIndex -= 1;
           counts[s_i] = previouslyRecordedValue;
         }
         else
         {
-          foundMatch = true;
+          // Record a match if this is the first one
+          if(!foundMatch)
+          {
+            foundMatch = true;
+            firstMatchPreviousLoopIndex = s_i;
+          }
 
           counts[s_i] += previouslyRecordedValue;
           previouslyRecordedValue = counts[s_i];
@@ -29,6 +37,7 @@
       }
     }
 
+    // Return the last four digits of the count
     return (counts[0] % 10000).ToString("D4");
   }
 }

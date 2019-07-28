@@ -19,18 +19,20 @@ fn get_valid_sequences(num_hours: usize, coins: &[usize], counts: &[usize]) -> V
     let mut clock_state = vec![false; num_hours];
     let mut current_sequence = Vec::with_capacity(num_hours);
 
-    let sequences = _get_valid_sequences_with_defaults(
+    let mut sequences = Vec::new();
+    _get_valid_sequences_with_defaults(
         num_hours,
         coins,
         counts,
         &mut current_sequence,
         &mut clock_state,
-    )
-    .into_iter()
-    .map(|value_vec| usize_vec_to_string(value_vec))
-    .collect();
+        &mut sequences,
+    );
 
-    return sequences;
+    return sequences
+        .into_iter()
+        .map(|value_vec| usize_vec_to_string(value_vec))
+        .collect();
 }
 
 fn usize_vec_to_string(values: Vec<usize>) -> String {
@@ -46,13 +48,15 @@ fn _get_valid_sequences_with_defaults(
     counts: &[usize],
     current_sequence: &mut Vec<usize>,
     clock_state: &mut Vec<bool>,
-) -> Vec<Vec<usize>> {
-    return _get_valid_sequences(
+    return_values: &mut Vec<Vec<usize>>,
+) {
+    _get_valid_sequences(
         num_hours,
         coins,
         counts,
         current_sequence,
         clock_state,
+        return_values,
         0,
         &mut vec![0; counts.len()],
     );
@@ -64,14 +68,12 @@ fn _get_valid_sequences(
     counts: &[usize],
     current_sequence: &mut Vec<usize>,
     clock_state: &mut Vec<bool>,
+    return_values: &mut Vec<Vec<usize>>,
     current_value: usize,
     current_counts: &mut Vec<usize>,
-) -> Vec<Vec<usize>> {
-    let mut return_values = Vec::new();
-
+) {
     if current_sequence.len() == num_hours {
         return_values.push(current_sequence.to_owned());
-        return return_values;
     } else {
         for i in 0..coins.len() {
             let counts_remaining = counts[i] - current_counts[i];
@@ -91,23 +93,22 @@ fn _get_valid_sequences(
             current_counts[i] += 1;
             current_sequence.push(coin);
 
-            let mut new_values = _get_valid_sequences(
+            _get_valid_sequences(
                 num_hours,
                 coins,
                 counts,
                 current_sequence,
                 clock_state,
+                return_values,
                 next_value,
                 current_counts,
             );
-            return_values.append(&mut new_values);
 
             clock_state[next_value] = false;
             current_counts[i] -= 1;
             current_sequence.pop();
         }
     }
-    return return_values;
 }
 
 fn get_coin_name(coin_value: usize) -> char {

@@ -30,12 +30,14 @@ namespace coinsOnTheClock
       int[] currentSequence = new int[numHours];
 
       // Get all the sequences
-      List<int[]> sequences = GetValidSequences(
+      List<int[]> sequences = new List<int[]>();
+      GetValidSequences(
           numHours,
           values,
           counts,
           currentSequence,
-          clockState
+          clockState,
+          sequences
       );
 
       // Convert to strings.
@@ -58,26 +60,25 @@ namespace coinsOnTheClock
     // counts               - count of each coin value. Related to values
     // currentSequence      - Array of coin values we've placed on the clock
     // clockState           - Array recording which clock hours have coins
+    // returnValues         - List of sequence results (int[]s)
     // currentValue         - current clock hour we're on
     // currentSequenceIndex - Current index of sequence we're on
-    static List<int[]> GetValidSequences(
+    static void GetValidSequences(
         int numHours,
         int[] values,
         int[] counts,
         int[] currentSequence,
         bool[] clockState,
+        List<int[]> returnValues,
         int currentValue = 0,
         int currentSequenceIndex = 0
     )
     {
-      // Store all the sequences we find
-      List<int[]> returnValues = new List<int[]>();
-
       // If we've added the last coin, record the sequence
       if (currentSequenceIndex == numHours)
       {
         int[] copiedSequence = new int[currentSequence.Length];
-        System.Array.Copy(currentSequence, copiedSequence, currentSequence.Length);
+        Array.Copy(currentSequence, copiedSequence, currentSequence.Length);
         returnValues.Add(copiedSequence);
       }
       else
@@ -104,27 +105,22 @@ namespace coinsOnTheClock
           clockState[nextValue] = true;
           counts[i] -= 1;
 
-          List<int[]> sequences = GetValidSequences(
+          GetValidSequences(
               numHours,
               values,
               counts,
               currentSequence,
               clockState,
+              returnValues,
               nextValue,
               currentSequenceIndex + 1
           );
-          if (sequences.Count > 0)
-          {
-            returnValues.AddRange(sequences);
-          }
 
           // Remove the coin
           clockState[nextValue] = false;
           counts[i] += 1;
         }
       }
-
-      return returnValues;
     }
 
     // GetCoinName

@@ -1,12 +1,14 @@
 const performance = require("perf_hooks").performance;
 
 function getValidSequences(numHours, values, counts) {
-  const sequences = _getValidSequences(
+  const sequences = [];
+  _getValidSequences(
     numHours,
     values,
     counts,
     Buffer.alloc(numHours),
     Buffer.alloc(numHours),
+    sequences,
     0,
     0
   );
@@ -19,39 +21,40 @@ function _getValidSequences(
   counts,
   currentSequence,
   clockState,
+  returnValues,
   currentValue,
   currentSequenceIndex
 ) {
-  if (currentSequenceIndex === numHours) return [[...currentSequence]];
-
-  const returnValues = [];
-  for (let i = 0; i < counts.length; i++) {
-    if (counts[i] === 0) continue;
-
-    const nextValue = (currentValue + values[i]) % numHours;
-
-    if (clockState[nextValue]) continue;
-
-    clockState[nextValue] = 1;
-    counts[i] -= 1;
-    currentSequence[currentSequenceIndex] = values[i];
-
-    const sequences = _getValidSequences(
-      numHours,
-      values,
-      counts,
-      currentSequence,
-      clockState,
-      nextValue,
-      currentSequenceIndex + 1
-    );
-    if (sequences.length) returnValues.push(...sequences);
-
-    clockState[nextValue] = 0;
-    counts[i] += 1;
+  if (currentSequenceIndex === numHours) {
+    returnValues.push([...currentSequence]);
   }
+  else {
+    for (let i = 0; i < counts.length; i++) {
+      if (counts[i] === 0) continue;
 
-  return returnValues;
+      const nextValue = (currentValue + values[i]) % numHours;
+
+      if (clockState[nextValue]) continue;
+
+      clockState[nextValue] = 1;
+      counts[i] -= 1;
+      currentSequence[currentSequenceIndex] = values[i];
+
+      const sequences = _getValidSequences(
+        numHours,
+        values,
+        counts,
+        currentSequence,
+        clockState,
+        returnValues,
+        nextValue,
+        currentSequenceIndex + 1
+      );
+
+      clockState[nextValue] = 0;
+      counts[i] += 1;
+    }
+  }
 }
 
 function getCoinName(coin) {

@@ -1,6 +1,6 @@
 *.exe
-**/c#/bin
-**/c#/obj
+**/bin
+**/obj
 **/settings.json
 **/rust/target
-**/.vscode/
+**/.vscode

@@ -7,8 +7,8 @@ class Program
 {
   static void Main(string[] args)
   {
-    Console.WriteLine("Testing recursive");
-    TestCountStringSubsequence(new Recursive());
+    // Console.WriteLine("Testing recursive");
+    // TestCountStringSubsequence(new Recursive());
 
     Console.WriteLine("Testing dynamic");
     TestCountStringSubsequence(new Dynamic());
@@ -16,8 +16,8 @@ class Program
     Console.WriteLine("Testing dynamic 1D");
     TestCountStringSubsequence(new Dynamic1D());
 
-    TestDataSet(new Dynamic1D(), "C-small-practice.in");
-    TestDataSet(new Dynamic1D(), "C-large-practice.in");
+    TestDataSet(new Dynamic(), "C-small-practice.in");
+    TestDataSet(new Dynamic(), "C-large-practice.in");
   }
 
   private static void TestDataSet(ISequenceCounter counter, string path)
@@ -33,8 +33,23 @@ class Program
 
   private static void TestCountStringSubsequence(ISequenceCounter counter)
   {
-    // Debug.Assert(counter.CountStringSubsequences("a", "d") == "0000", "a + d");
-    // Debug.Assert(counter.CountStringSubsequences("aa", "aa") == "0001", "aa + aa");
+    Debug.Assert(counter.CountStringSubsequences("a", "d") == "0000", "a + d");
+    Debug.Assert(counter.CountStringSubsequences("aa", "aa") == "0001", "aa + aa");
+
+    string[] sources = {"abc", "aabc", "abbc", "abcc"};
+    string[] targets = {"", "a", "b", "c", "d", "ab", "bc", "ac", "abc"};
+    foreach (string source in sources) {
+      foreach (string target in targets) {
+        Console.WriteLine(
+          "target: "
+          + target
+          + " + source: "
+          + source
+          + " = "
+          + counter.CountStringSubsequences(source, target)
+        );
+      }
+    }
     string welcome = "welcome to code jam";
     string[] codejamSources = { "elcomew elcome to code jam", "wweellccoommee to code qps jam", "lwelcome to codejam" };
     string[] expectations = { "0001", "0256", "0000" };

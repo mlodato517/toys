@@ -69,11 +69,11 @@ fn _get_valid_sequences(
 ) -> Vec<Vec<usize>> {
     let mut return_values = Vec::new();
 
-    for i in 0..coins.len() {
-        if current_sequence.len() == num_hours {
-            return_values.push(current_sequence.to_owned());
-            return return_values;
-        } else {
+    if current_sequence.len() == num_hours {
+        return_values.push(current_sequence.to_owned());
+        return return_values;
+    } else {
+        for i in 0..coins.len() {
             let counts_remaining = counts[i] - current_counts[i];
 
             if counts_remaining == 0 {

@@ -13,10 +13,11 @@
     int firstMatchPreviousLoopIndex = source.Length;
     for (int t_i = target.Length - 1; t_i >= 0; t_i -= 1)
     {
-      // Flag for recording our first match of each loop
-      bool foundMatch = false;
       ulong previouslyRecordedValue = 0;
-      for (int s_i = firstMatchPreviousLoopIndex - 1; s_i >= 0; s_i -= 1)
+
+      int s_i = firstMatchPreviousLoopIndex - 1;
+      firstMatchPreviousLoopIndex = 0;
+      for (; s_i >= 0; s_i -= 1)
       {
         if (source[s_i] != target[t_i])
         {
@@ -25,11 +26,7 @@
         else
         {
           // Record a match if this is the first one
-          if(!foundMatch)
-          {
-            foundMatch = true;
-            firstMatchPreviousLoopIndex = s_i;
-          }
+          if(firstMatchPreviousLoopIndex == 0) firstMatchPreviousLoopIndex = s_i;
 
           counts[s_i] += previouslyRecordedValue;
           previouslyRecordedValue = counts[s_i];

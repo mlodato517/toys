@@ -4,32 +4,50 @@
   {
     if (target.Length == 0 || source.Length == 0) return "0000";
 
-    // Create one array the length of source and fill it with 1s
     ulong[] counts = new ulong[source.Length];
-    System.Array.Fill(counts, (ulong)1);
 
-    // Keep track of the first index we got a match on the previous loop because
-    // future iterations can start one to the left of that index.
-    int firstMatchPreviousLoopIndex = source.Length;
-    for (int t_i = target.Length - 1; t_i >= 0; t_i -= 1)
+    // Future iterations can start one to the left of the first match on the previous loop
+    int firstMatchPreviousLoopIndex = -1;
+
+    // Initialize row with incrementing counts on matches against the last char of target
+    ulong firstLoopCounter = 0;
+    char lastTargetChar = target[target.Length - 1];
+    for (int s_i = source.Length - 1; s_i >= 0; s_i -= 1)
     {
-      ulong previouslyRecordedValue = 0;
+      bool match = source[s_i] == lastTargetChar;
+      if(firstMatchPreviousLoopIndex == -1 && match) firstMatchPreviousLoopIndex = s_i;
+      counts[s_i] = match ? ++firstLoopCounter : firstLoopCounter;
+    }
 
-      int s_i = firstMatchPreviousLoopIndex - 1;
-      firstMatchPreviousLoopIndex = 0;
-      for (; s_i >= 0; s_i -= 1)
+    // Edge case: initialization pass found no matches
+    if (firstMatchPreviousLoopIndex == -1) return "0000";
+
+    for (int t_i = target.Length - 2; t_i >= 0; t_i -= 1)
+    {
+      bool foundMatch = false;
+      ulong replacedValue = counts[firstMatchPreviousLoopIndex];
+      ulong previouslyRecordedValue = 0;
+      for (int s_i = firstMatchPreviousLoopIndex - 1; s_i >= 0; s_i -= 1)
       {
-        if (source[s_i] != target[t_i])
+        if (source[s_i] == target[t_i])
         {
-          counts[s_i] = previouslyRecordedValue;
+          // Record the first match
+          if(!foundMatch)
+          {
+            firstMatchPreviousLoopIndex = s_i;
+            foundMatch = true;
+          }
+
+          ulong newValue = previouslyRecordedValue + replacedValue;
+          replacedValue = counts[s_i];
+          counts[s_i] = newValue;
+          previouslyRecordedValue = counts[s_i];
         }
         else
         {
-          // Record a match if this is the first one
-          if(firstMatchPreviousLoopIndex == 0) firstMatchPreviousLoopIndex = s_i;
-
-          counts[s_i] += previouslyRecordedValue;
-          previouslyRecordedValue = counts[s_i];
+          // Else, no match, carry the previous value
+          replacedValue = counts[s_i];
+          counts[s_i] = previouslyRecordedValue;
         }
       }
     }

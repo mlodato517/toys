@@ -33,6 +33,8 @@ class Program
 
   private static void TestCountStringSubsequence(ISequenceCounter counter)
   {
+    // Debug.Assert(counter.CountStringSubsequences("a", "d") == "0000", "a + d");
+    // Debug.Assert(counter.CountStringSubsequences("aa", "aa") == "0001", "aa + aa");
     string welcome = "welcome to code jam";
     string[] codejamSources = { "elcomew elcome to code jam", "wweellccoommee to code qps jam", "lwelcome to codejam" };
     string[] expectations = { "0001", "0256", "0000" };

@@ -4,7 +4,7 @@ cpp_compile = `g++ -O3 cpp/coins-on-the-clock.cpp -o "cpp/coins-on-the-clock"`
 cpp_ms = `cpp/coins-on-the-clock`
 cpp_cleanup = `rm cpp/coins-on-the-clock`
 
-ruby_ms = `ruby --jit ruby/coins_on_the_clock.rb`
+ruby_ms = `ruby ruby/coins_on_the_clock.rb`
 
 cs_ms = `dotnet run -c Release --project c#/`
 

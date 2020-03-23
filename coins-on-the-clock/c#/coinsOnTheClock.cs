@@ -30,7 +30,7 @@ namespace coinsOnTheClock
       int[] currentSequence = new int[numHours];
 
       // Get all the sequences
-      List<int[]> sequences = new List<int[]>();
+      List<string> sequences = new List<string>();
       GetValidSequences(
           numHours,
           values,
@@ -40,18 +40,7 @@ namespace coinsOnTheClock
           sequences
       );
 
-      // Convert to strings.
-      List<string> results = new List<string>();
-      foreach (int[] sequence in sequences)
-      {
-        char[] result = new char[sequence.Length];
-        for (int i = 0; i < result.Length; i += 1)
-        {
-          result[i] = GetCoinName(sequence[i]);
-        }
-        results.Add(new string(result));
-      }
-      return results;
+      return sequences;
     }
 
     // Recursive function to get valid coin sequences
@@ -60,7 +49,7 @@ namespace coinsOnTheClock
     // counts               - count of each coin value. Related to values
     // currentSequence      - Array of coin values we've placed on the clock
     // clockState           - Array recording which clock hours have coins
-    // returnValues         - List of sequence results (int[]s)
+    // returnValues         - List of sequence results
     // currentValue         - current clock hour we're on
     // currentSequenceIndex - Current index of sequence we're on
     static void GetValidSequences(
@@ -69,7 +58,7 @@ namespace coinsOnTheClock
         int[] counts,
         int[] currentSequence,
         bool[] clockState,
-        List<int[]> returnValues,
+        List<string> returnValues,
         int currentValue = 0,
         int currentSequenceIndex = 0
     )
@@ -77,9 +66,11 @@ namespace coinsOnTheClock
       // If we've added the last coin, record the sequence
       if (currentSequenceIndex == numHours)
       {
-        int[] copiedSequence = new int[currentSequence.Length];
-        Array.Copy(currentSequence, copiedSequence, currentSequence.Length);
-        returnValues.Add(copiedSequence);
+        char[] coinNames = new char[currentSequence.Length];
+        for (int i = 0; i < currentSequence.Length; i += 1) {
+          coinNames[i] = GetCoinName(currentSequence[i]);
+        }
+        returnValues.Add(new string(coinNames));
       }
       else
       {

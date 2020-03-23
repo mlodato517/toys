@@ -22,28 +22,19 @@ func getValidSequences(numHours int, coinValues []int, coinCounts []int) []strin
 	clockState := make([]bool, numHours)
 	currentSequence := make([]int, numHours)
 
-	sequences := _getValidSequences(
+	var sequences []string
+	_getValidSequences(
 		numHours,
 		coinValues,
 		coinCounts,
 		currentSequence,
 		clockState,
+		sequences,
 		0,
 		0,
 	)
 
-	returnValues := make([]string, len(sequences))
-
-	for i, sequence := range sequences {
-		toBeString := make([]byte, len(sequence))
-
-		for j, b := range sequence {
-			toBeString[j] = getCoinName(b)
-		}
-		returnValues[i] = string(toBeString)
-	}
-
-	return returnValues
+	return sequences
 }
 
 func _getValidSequences(
@@ -52,14 +43,16 @@ func _getValidSequences(
 	coinCounts []int,
 	currentSequence []int,
 	clockState []bool,
+	returnValues []string,
 	currentValue int,
 	currentSequenceIndex int,
-) [][]int {
-	var returnValues [][]int
+) {
 	if currentSequenceIndex == numHours {
-		destination := make([]int, numHours)
-		copy(destination, currentSequence)
-		returnValues = append(returnValues, destination)
+		coinNames := make([]byte, numHours)
+		for i, v := range currentSequence {
+			coinNames[i] = getCoinName(v)
+		}
+		returnValues = append(returnValues, string(coinNames))
 	} else {
 		for i := 0; i < len(coinValues); i++ {
 			if coinCounts[i] == 0 {
@@ -76,26 +69,21 @@ func _getValidSequences(
 			clockState[nextValue] = true
 			coinCounts[i]--
 
-			sequences := _getValidSequences(
+			_getValidSequences(
 				numHours,
 				coinValues,
 				coinCounts,
 				currentSequence,
 				clockState,
+				returnValues,
 				nextValue,
 				currentSequenceIndex+1,
 			)
-
-			for _, sequence := range sequences {
-				returnValues = append(returnValues, sequence)
-			}
 
 			clockState[nextValue] = false
 			coinCounts[i]++
 		}
 	}
-
-	return returnValues
 }
 
 func getCoinName(coin int) byte {

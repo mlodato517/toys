@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
 }
 
 fun getValidSequences(numHours: Int, values: IntArray, counts: IntArray): List<String> {
-  val sequences = mutableListOf<IntArray>()
+  val sequences = mutableListOf<String>()
   getValidSequences(
     numHours,
     values,
@@ -26,7 +26,7 @@ fun getValidSequences(numHours: Int, values: IntArray, counts: IntArray): List<S
     0
   )
 
-  return sequences.map { sequence -> sequence.map { getCoinName(it) }.joinToString("") }
+  return sequences
 }
 
 fun getValidSequences(
@@ -35,12 +35,12 @@ fun getValidSequences(
   counts: IntArray,
   currentSequence: IntArray,
   clockState: BooleanArray,
-  returnValues: MutableList<IntArray>,
+  returnValues: MutableList<String>,
   currentValue: Int,
   currentSequenceIndex: Int
 ) {
   if (currentSequenceIndex == numHours) {
-    returnValues.add(currentSequence.copyOf())
+    returnValues.add(currentSequence.map { getCoinName(it) }.joinToString(""))
   } else {
     var i = counts.size
     while (--i > -1) {

@@ -40,7 +40,7 @@ void getValidSequences(
     int numValues,
     int *currentSequence,
     bool *clockState,
-    vector<int *> *returnValues,
+    vector<string> *returnValues,
     int currentValue,
     int currentSequenceIndex)
 {
@@ -49,9 +49,13 @@ void getValidSequences(
   {
 
     // Copy the array and push it onto the vector
-    int *copiedSequence = new int[numHours];
-    memcpy(copiedSequence, currentSequence, numHours * sizeof (int));
-    returnValues->push_back(copiedSequence);
+    char *newSequence = new char[numHours];
+    for (int i = 0; i < numHours; i += 1)
+    {
+      *(newSequence + i) = getCoinName(*(currentSequence + i));
+    }
+    string newSequenceString = newSequence;
+    returnValues->push_back(newSequenceString);
   }
   else
   {
@@ -112,7 +116,7 @@ vector<string> getValidSequences(
   bool *clockState = new bool[numHours]();
   int *currentSequence = new int[numHours];
 
-  vector<int *> sequences;
+  vector<string> sequences;
   getValidSequences(
       numHours,
       values,
@@ -127,25 +131,7 @@ vector<string> getValidSequences(
   delete[] clockState;
   delete[] currentSequence;
 
-  // Convert to char vector
-  vector<string> results(sequences.size());
-  for (int i = 0; i < sequences.size(); i += 1)
-  {
-    int *sequence = sequences[i];
-    char *result = new char[numHours + 1];
-    for (int j = 0; j < numHours; j += 1)
-    {
-      *(result + j) = getCoinName(*(sequence + j));
-    }
-    *(result + numHours) = '\0';
-
-    string stringResult = result;
-    results[i] = stringResult;
-    delete[] result;
-    delete[] sequence;
-  }
-
-  return results;
+  return sequences;
 }
 
 int main()

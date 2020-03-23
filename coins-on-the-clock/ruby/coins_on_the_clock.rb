@@ -11,7 +11,7 @@ def get_valid_sequences(num_hours, values, counts)
     0
   )
 
-  sequences.map { |s| s.map { |i| get_coin_name(i) }.join('') }
+  sequences
 end
 
 def _get_valid_sequences(
@@ -25,7 +25,7 @@ def _get_valid_sequences(
   current_sequence_index
 )
   if current_sequence_index == num_hours
-    return_values.push(current_sequence.dup)
+    return_values.push(current_sequence.map { |i| get_coin_name(i) }.join(''))
   else
     i = -1
     while ((i += 1) < counts.length) do

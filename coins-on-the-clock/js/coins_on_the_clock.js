@@ -12,7 +12,7 @@ function getValidSequences(numHours, values, counts) {
     0,
     0
   );
-  return sequences.map(sequence => sequence.map(i => getCoinName(i)).join(""));
+  return sequences
 }
 
 function _getValidSequences(
@@ -26,7 +26,7 @@ function _getValidSequences(
   currentSequenceIndex
 ) {
   if (currentSequenceIndex === numHours) {
-    returnValues.push([...currentSequence]);
+    returnValues.push(currentSequence.map(v => getCoinName(v)).join(""));
   }
   else {
     for (let i = 0; i < counts.length; i++) {
@@ -40,7 +40,7 @@ function _getValidSequences(
       counts[i] -= 1;
       currentSequence[currentSequenceIndex] = values[i];
 
-      const sequences = _getValidSequences(
+      _getValidSequences(
         numHours,
         values,
         counts,

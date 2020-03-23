@@ -31,7 +31,7 @@ def _GetValidSequences(
     # If we have numHours coins in our sequence, we've
     # found a solution. Add it to returnValues.
     if (currentIndex == numHours):
-        returnValues.append(currentSequence[:])
+        returnValues.append(''.join([GetCoinName(v) for v in currentSequence]))
     else:
         for i in range(coinLength):
 
@@ -113,14 +113,7 @@ def GetValidSequences(numHours, coins, counts):
         len(coins)
     )
 
-    # Convert list of list of ints to list of strings
-    returnValue = [IntListToString(sequence) for sequence in sequences]
-
-    return returnValue
-
-
-def IntListToString(intList):
-    return ''.join([GetCoinName(i) for i in intList])
+    return sequences
 
 
 def main():

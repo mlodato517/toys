@@ -5,12 +5,12 @@ fn main() {
     let coins = [1, 5, 10];
     let counts = [4, 4, 4];
 
-    let now = time::precise_time_ns();
+    let start = time::precise_time_ns();
     for _ in 0..1000 {
         get_valid_sequences(num_hours, &coins, &counts);
     }
-    let now2 = time::precise_time_ns();
-    let diff = (now2 - now) / 1000000;
+    let end = time::precise_time_ns();
+    let diff = (end - start) / 1_000_000;
 
     println!("{}", diff);
 }
@@ -29,17 +29,7 @@ fn get_valid_sequences(num_hours: usize, coins: &[usize], counts: &[usize]) -> V
         &mut sequences,
     );
 
-    return sequences
-        .into_iter()
-        .map(|value_vec| usize_vec_to_string(value_vec))
-        .collect();
-}
-
-fn usize_vec_to_string(values: Vec<usize>) -> String {
-    values
-        .into_iter()
-        .map(|value| get_coin_name(value))
-        .collect::<String>()
+    sequences
 }
 
 fn _get_valid_sequences_with_defaults(
@@ -48,7 +38,7 @@ fn _get_valid_sequences_with_defaults(
     counts: &[usize],
     current_sequence: &mut Vec<usize>,
     clock_state: &mut Vec<bool>,
-    return_values: &mut Vec<Vec<usize>>,
+    return_values: &mut Vec<String>,
 ) {
     _get_valid_sequences(
         num_hours,
@@ -68,12 +58,12 @@ fn _get_valid_sequences(
     counts: &[usize],
     current_sequence: &mut Vec<usize>,
     clock_state: &mut Vec<bool>,
-    return_values: &mut Vec<Vec<usize>>,
+    return_values: &mut Vec<String>,
     current_value: usize,
     current_counts: &mut Vec<usize>,
 ) {
     if current_sequence.len() == num_hours {
-        return_values.push(current_sequence.to_owned());
+        return_values.push(current_sequence.iter().map(|&v| get_coin_name(v)).collect());
     } else {
         for i in 0..coins.len() {
             let counts_remaining = counts[i] - current_counts[i];
@@ -112,11 +102,11 @@ fn _get_valid_sequences(
 }
 
 fn get_coin_name(coin_value: usize) -> char {
-    return match coin_value {
+    match coin_value {
         1 => 'p',
         5 => 'n',
         10 => 'd',
         25 => 'q',
         _ => 'x',
-    };
+    }
 }

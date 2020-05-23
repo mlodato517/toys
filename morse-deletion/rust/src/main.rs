@@ -49,8 +49,8 @@ fn count_morse_deletions(source: &[u8], delete_strs: &[&[u8]]) -> usize {
         sources = sources
             .iter()
             .flat_map(|source| {
-                let result = Vec::with_capacity(source.len());
-                deletion_options(source, delete_str, result)
+                let mut result = Vec::with_capacity(source.len());
+                deletion_options(source, delete_str, &mut result)
             })
             .collect();
     }
@@ -60,11 +60,12 @@ fn count_morse_deletions(source: &[u8], delete_strs: &[&[u8]]) -> usize {
 
 // Finds the unique set of strings resulting from removing the
 // sequence delete_str from source.
-fn deletion_options(source: &[u8], delete_str: &[u8], mut result: Vec<u8>) -> HashSet<Vec<u8>> {
+fn deletion_options(source: &[u8], delete_str: &[u8], result: &mut Vec<u8>) -> HashSet<Vec<u8>> {
     let mut results = HashSet::new();
 
     // Base case - we removed all of the characters and found a result.
     if delete_str.is_empty() {
+        let mut result = result.clone();
         result.extend_from_slice(&source);
         results.insert(result);
         return results;
@@ -77,8 +78,14 @@ fn deletion_options(source: &[u8], delete_str: &[u8], mut result: Vec<u8>) -> Ha
         if source[i] == delete_str[0] {
             if !matched {
                 matched = true;
-                let deep_results =
-                    deletion_options(&source[i + 1..], &delete_str[1..], result.clone());
+
+                let current_result_len = result.len();
+
+                let deep_results = deletion_options(&source[i + 1..], &delete_str[1..], result);
+
+                // Truncate any changes to result from when we recursed
+                result.truncate(current_result_len);
+
                 deep_results.into_iter().for_each(|r| {
                     results.insert(r);
                 });

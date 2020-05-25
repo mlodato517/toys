@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::collections::HashSet;
 use std::time::Instant;
 
@@ -47,10 +48,10 @@ fn count_morse_deletions(source: &[u8], delete_strs: &[&[u8]]) -> usize {
     let mut sources: HashSet<Vec<u8>> = [source.to_vec()].iter().cloned().collect();
     for delete_str in delete_strs {
         sources = sources
-            .iter()
+            .into_par_iter()
             .flat_map(|source| {
                 let mut result = Vec::with_capacity(source.len());
-                deletion_options(source, delete_str, &mut result)
+                deletion_options(&source, delete_str, &mut result)
             })
             .collect();
     }

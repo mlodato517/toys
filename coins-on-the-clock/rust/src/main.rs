@@ -1,112 +1,121 @@
-extern crate time;
+use std::time::Instant;
 
 fn main() {
-    let num_hours = 12;
-    let coins = [1, 5, 10];
-    let counts = [4, 4, 4];
-
-    let start = time::precise_time_ns();
+    let start = Instant::now();
     for _ in 0..1000 {
-        get_valid_sequences(num_hours, &coins, &counts);
+        get_valid_sequences();
     }
-    let end = time::precise_time_ns();
-    let diff = (end - start) / 1_000_000;
-
-    println!("{}", diff);
+    println!("{}", start.elapsed().as_millis());
 }
 
-fn get_valid_sequences(num_hours: usize, coins: &[usize], counts: &[usize]) -> Vec<String> {
-    let mut clock_state = vec![false; num_hours];
-    let mut current_sequence = Vec::with_capacity(num_hours);
-
+fn get_valid_sequences() -> Vec<String> {
     let mut sequences = Vec::new();
-    _get_valid_sequences_with_defaults(
-        num_hours,
-        coins,
-        counts,
-        &mut current_sequence,
-        &mut clock_state,
-        &mut sequences,
-    );
+    _get_valid_sequences(4, 4, 4, 0, 0, 0, 0, &mut sequences);
 
     sequences
+        .iter()
+        .copied()
+        .map(coin_sequence_from_u32)
+        .collect()
 }
 
-fn _get_valid_sequences_with_defaults(
-    num_hours: usize,
-    coins: &[usize],
-    counts: &[usize],
-    current_sequence: &mut Vec<usize>,
-    clock_state: &mut Vec<bool>,
-    return_values: &mut Vec<String>,
-) {
-    _get_valid_sequences(
-        num_hours,
-        coins,
-        counts,
-        current_sequence,
-        clock_state,
-        return_values,
-        0,
-        &mut vec![0; counts.len()],
-    );
-}
-
+// Recursively try putting pennies, nickels, and dimes on the clock.
+// When a coin is placed, its value (see coin_sequence_from_u32)
+// is masked onto current_sequence and the coin's count is decremented.
+// Coins cannot be placed if they're spot is already taken (identified
+// via the BitSet clock_state).
+// When we have no pennies, nickels, or dimes, we've found a solution
+// and we add it to the list.
 fn _get_valid_sequences(
-    num_hours: usize,
-    coins: &[usize],
-    counts: &[usize],
-    current_sequence: &mut Vec<usize>,
-    clock_state: &mut Vec<bool>,
-    return_values: &mut Vec<String>,
-    current_value: usize,
-    current_counts: &mut Vec<usize>,
+    num_pennies: u8,
+    num_nickels: u8,
+    num_dimes: u8,
+    current_sequence: u32,
+    clock_state: u16,
+    current_value: u16,
+    current_index: u8,
+    return_values: &mut Vec<u32>,
 ) {
-    if current_sequence.len() == num_hours {
-        return_values.push(current_sequence.iter().map(|&v| get_coin_name(v)).collect());
+    if num_pennies == 0 && num_nickels == 0 && num_dimes == 0 {
+        return_values.push(current_sequence);
     } else {
-        for i in 0..coins.len() {
-            let counts_remaining = counts[i] - current_counts[i];
-
-            if counts_remaining == 0 {
-                continue;
+        if num_pennies != 0 {
+            let next_value = (current_value + 1) % 12;
+            if clock_state & (1 << next_value) == 0 {
+                _get_valid_sequences(
+                    num_pennies - 1,
+                    num_nickels,
+                    num_dimes,
+                    current_sequence | (1 << current_index),
+                    clock_state | (1 << next_value),
+                    next_value,
+                    current_index + 2,
+                    return_values,
+                );
             }
-
-            let coin = coins[i];
-            let next_value = (current_value + coin) % num_hours;
-
-            if clock_state[next_value] {
-                continue;
+        }
+        if num_nickels != 0 {
+            let next_value = (current_value + 5) % 12;
+            if clock_state & (1 << next_value) == 0 {
+                _get_valid_sequences(
+                    num_pennies,
+                    num_nickels - 1,
+                    num_dimes,
+                    current_sequence | (2 << current_index),
+                    clock_state | (1 << next_value),
+                    next_value,
+                    current_index + 2,
+                    return_values,
+                );
             }
-
-            clock_state[next_value] = true;
-            current_counts[i] += 1;
-            current_sequence.push(coin);
-
-            _get_valid_sequences(
-                num_hours,
-                coins,
-                counts,
-                current_sequence,
-                clock_state,
-                return_values,
-                next_value,
-                current_counts,
-            );
-
-            clock_state[next_value] = false;
-            current_counts[i] -= 1;
-            current_sequence.pop();
+        }
+        if num_dimes != 0 {
+            let next_value = (current_value + 10) % 12;
+            if clock_state & (1 << next_value) == 0 {
+                _get_valid_sequences(
+                    num_pennies,
+                    num_nickels,
+                    num_dimes - 1,
+                    current_sequence | (3 << current_index),
+                    clock_state | (1 << next_value),
+                    next_value,
+                    current_index + 2,
+                    return_values,
+                );
+            }
         }
     }
 }
 
-fn get_coin_name(coin_value: usize) -> char {
-    match coin_value {
-        1 => 'p',
-        5 => 'n',
-        10 => 'd',
-        25 => 'q',
-        _ => 'x',
-    }
+// A sequence is a 24 bit value.
+// Every 2 bits is a space for a coin.
+// 00 - no coin
+// 01 - penny
+// 10 - nickel
+// 11 - dime
+//
+// A shortened example:
+// sequence = 0b111001
+//
+// i = 0
+// bit_index = 11
+// coin_index = 01
+// coin = 'p'
+//
+// i = 1
+// bit_index = 1100
+// coin_index = 10
+// coin = 'n'
+//
+// i = 2
+// bit_index = 110000
+// coin_index = 11
+// coin = 'd'
+//
+// Result is 'pnd'!
+const COINS: [char; 4] = ['x', 'p', 'n', 'd'];
+fn coin_sequence_from_u32(sequence: u32) -> String {
+    (0..12)
+        .map(|i| COINS[(sequence & (0b11 << (2 * i))) as usize >> (2 * i)])
+        .collect()
 }

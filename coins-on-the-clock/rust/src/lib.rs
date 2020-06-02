@@ -1,13 +1,14 @@
 const NUM_HOURS: usize = 12;
 const COINS: [usize; 3] = [1, 5, 10];
 const COIN_CHARS: [char; 3] = ['p', 'n', 'd'];
+const COIN_IDS: [usize; 3] = [1, 2, 3];
 
 pub fn get_valid_sequences() -> Vec<String> {
     let mut sequences = Vec::new();
 
     _get_valid_sequences(
         &mut [4, 4, 4],
-        &mut [' '; NUM_HOURS],
+        0,
         &mut [false; NUM_HOURS],
         &mut sequences,
         0,
@@ -17,16 +18,32 @@ pub fn get_valid_sequences() -> Vec<String> {
     sequences
 }
 
+fn add_coin(current: usize, id: usize, offset: usize) -> usize {
+    current | (id << (offset * 2))
+}
+
+fn translate(sequence: usize) -> String {
+    (0..12)
+        .map(|i| {
+            let shift_amount = i * 2;
+            let mask = 0b11 << shift_amount;
+            let bits = sequence & mask;
+            let value = bits >> shift_amount;
+            COIN_CHARS[value - 1]
+        })
+        .collect()
+}
+
 fn _get_valid_sequences(
     counts: &mut [usize; 3],
-    current_sequence: &mut [char; NUM_HOURS],
+    current_sequence: usize,
     clock_state: &mut [bool; NUM_HOURS],
     return_values: &mut Vec<String>,
     current_value: usize,
     current_index: usize,
 ) {
     if counts.iter().all(|&n| n == 0) {
-        return_values.push(current_sequence.iter().collect());
+        return_values.push(translate(current_sequence));
     } else {
         for i in 0..COINS.len() {
             if counts[i] == 0 {
@@ -42,11 +59,10 @@ fn _get_valid_sequences(
 
             clock_state[next_value] = true;
             counts[i] -= 1;
-            current_sequence[current_index] = COIN_CHARS[i];
 
             _get_valid_sequences(
                 counts,
-                current_sequence,
+                add_coin(current_sequence, COIN_IDS[i], current_index),
                 clock_state,
                 return_values,
                 next_value,

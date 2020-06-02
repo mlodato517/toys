@@ -194,58 +194,58 @@ example::_get_valid_sequences:
         push    r12
         push    rbx
         sub     rsp, 72
-        mov     r15, r8
-        mov     rbp, rcx
+        mov     r10, r9
+        mov     r14, r8
+        mov     qword ptr [rsp + 56], rcx
         mov     r13, rdx
         mov     r12, rsi
         mov     rbx, rdi
         cmp     qword ptr [rdi], 0
-        mov     qword ptr [rsp + 24], rcx
         jne     .LBB4_1
         mov     rax, qword ptr [rbx + 8]
         or      rax, qword ptr [rbx + 16]
         jne     .LBB4_1
-        mov     qword ptr [rsp], 1
+        mov     qword ptr [rsp + 8], 1
         xorps   xmm0, xmm0
-        movups  xmmword ptr [rsp + 8], xmm0
-        mov     rdi, rsp
+        movups  xmmword ptr [rsp + 16], xmm0
+        lea     rdi, [rsp + 8]
         mov     esi, 12
         call    alloc::vec::Vec<T>::reserve
         xor     ebx, ebx
-        mov     r15, rsp
-        lea     r14, [rsp + 32]
+        lea     r14, [rsp + 8]
+        lea     r15, [rsp + 32]
         mov     r13, qword ptr [rip + memcpy@GOTPCREL]
         mov     ebp, dword ptr [r12 + rbx]
         cmp     ebp, 128
-        jb      .LBB4_27
-        jmp     .LBB4_21
-.LBB4_29:
-        mov     rax, qword ptr [rsp + 16]
-.LBB4_30:
-        mov     rcx, qword ptr [rsp]
+        jb      .LBB4_31
+        jmp     .LBB4_25
+.LBB4_33:
+        mov     rax, qword ptr [rsp + 24]
+.LBB4_34:
+        mov     rcx, qword ptr [rsp + 8]
         mov     byte ptr [rcx + rax], bpl
         add     rax, 1
-        mov     qword ptr [rsp + 16], rax
+        mov     qword ptr [rsp + 24], rax
         add     rbx, 4
         cmp     rbx, 48
-        je      .LBB4_32
-.LBB4_20:
+        je      .LBB4_36
+.LBB4_24:
         mov     ebp, dword ptr [r12 + rbx]
         cmp     ebp, 128
-        jae     .LBB4_21
-.LBB4_27:
-        mov     rax, qword ptr [rsp + 16]
-        cmp     rax, qword ptr [rsp + 8]
-        jne     .LBB4_30
+        jae     .LBB4_25
+.LBB4_31:
+        mov     rax, qword ptr [rsp + 24]
+        cmp     rax, qword ptr [rsp + 16]
+        jne     .LBB4_34
         mov     esi, 1
-        mov     rdi, r15
+        mov     rdi, r14
         call    alloc::vec::Vec<T>::reserve
-        jmp     .LBB4_29
-.LBB4_21:
+        jmp     .LBB4_33
+.LBB4_25:
         mov     dword ptr [rsp + 32], 0
         mov     eax, ebp
         cmp     ebp, 2048
-        jae     .LBB4_22
+        jae     .LBB4_26
         shr     eax, 6
         and     al, 31
         or      al, -64
@@ -254,10 +254,10 @@ example::_get_valid_sequences:
         or      bpl, -128
         mov     byte ptr [rsp + 33], bpl
         mov     ebp, 2
-        jmp     .LBB4_25
-.LBB4_22:
+        jmp     .LBB4_29
+.LBB4_26:
         cmp     ebp, 65536
-        jae     .LBB4_24
+        jae     .LBB4_28
         shr     eax, 12
         and     al, 15
         or      al, -32
@@ -271,8 +271,8 @@ example::_get_valid_sequences:
         or      bpl, -128
         mov     byte ptr [rsp + 34], bpl
         mov     ebp, 3
-        jmp     .LBB4_25
-.LBB4_24:
+        jmp     .LBB4_29
+.LBB4_28:
         shr     eax, 18
         or      al, -16
         mov     byte ptr [rsp + 32], al
@@ -290,213 +290,210 @@ example::_get_valid_sequences:
         or      bpl, -128
         mov     byte ptr [rsp + 35], bpl
         mov     ebp, 4
-.LBB4_25:
-        mov     rdi, r15
+.LBB4_29:
+        mov     rdi, r14
         mov     rsi, rbp
         call    alloc::vec::Vec<T>::reserve
-        mov     rdi, qword ptr [rsp + 16]
+        mov     rdi, qword ptr [rsp + 24]
         lea     rax, [rdi + rbp]
-        mov     qword ptr [rsp + 16], rax
-        add     rdi, qword ptr [rsp]
-        mov     rsi, r14
+        mov     qword ptr [rsp + 24], rax
+        add     rdi, qword ptr [rsp + 8]
+        mov     rsi, r15
         mov     rdx, rbp
         call    r13
         add     rbx, 4
         cmp     rbx, 48
-        jne     .LBB4_20
-.LBB4_32:
-        mov     rax, qword ptr [rsp + 16]
+        jne     .LBB4_24
+.LBB4_36:
+        mov     rax, qword ptr [rsp + 24]
         mov     qword ptr [rsp + 48], rax
-        movups  xmm0, xmmword ptr [rsp]
+        movups  xmm0, xmmword ptr [rsp + 8]
         movaps  xmmword ptr [rsp + 32], xmm0
-        mov     rdi, qword ptr [rsp + 24]
-        mov     rsi, qword ptr [rdi + 16]
-        cmp     rsi, qword ptr [rdi + 8]
-        jne     .LBB4_33
+        mov     rbp, qword ptr [rsp + 56]
+        mov     rsi, qword ptr [rbp + 16]
+        cmp     rsi, qword ptr [rbp + 8]
+        jne     .LBB4_37
         mov     rax, rsi
         inc     rax
-        je      .LBB4_51
+        je      .LBB4_55
         lea     rcx, [rsi + rsi]
         cmp     rcx, rax
         cmova   rax, rcx
         mov     ecx, 24
         xor     ebx, ebx
         mul     rcx
-        mov     rbp, rax
+        mov     r15, rax
         setno   al
-        jo      .LBB4_51
+        jo      .LBB4_55
         mov     bl, al
         shl     rbx, 3
         xor     edx, edx
         test    rsi, rsi
         setne   al
         test    rsi, rsi
-        je      .LBB4_38
+        je      .LBB4_42
         shl     rsi, 3
         mov     dl, al
         shl     rdx, 3
         lea     rsi, [rsi + 2*rsi]
-        mov     rax, qword ptr [rsp + 24]
-        mov     rdi, qword ptr [rax]
-        mov     qword ptr [rsp], rsi
-        mov     qword ptr [rsp + 8], rdx
+        mov     rdi, qword ptr [rbp]
+        mov     qword ptr [rsp + 8], rsi
+        mov     qword ptr [rsp + 16], rdx
         test    rsi, rsi
-        je      .LBB4_43
-        test    rbp, rbp
-        je      .LBB4_48
-        mov     rcx, rbp
+        je      .LBB4_47
+        test    r15, r15
+        je      .LBB4_52
+        mov     rcx, r15
         call    qword ptr [rip + __rust_realloc@GOTPCREL]
         mov     rcx, rax
         test    rax, rax
-        jne     .LBB4_50
-        jmp     .LBB4_65
+        jne     .LBB4_54
+        jmp     .LBB4_69
 .LBB4_1:
         mov     rax, qword ptr [rbx]
-        cmp     r9, 12
+        cmp     r10, 12
         jae     .LBB4_2
-        lea     r10, [r9 + 1]
+        lea     r15, [r10 + 1]
         test    rax, rax
-        je      .LBB4_9
-        lea     r14, [r15 + 1]
-        movabs  rcx, -6148914691236517205
-        mov     rax, r14
-        mul     rcx
-        shr     rdx
-        and     rdx, -4
-        lea     rax, [rdx + 2*rdx]
-        sub     r14, rax
-        cmp     byte ptr [r13 + r14], 0
-        jne     .LBB4_9
-        mov     byte ptr [r13 + r14], 1
-        add     qword ptr [rbx], -1
-        mov     dword ptr [r12 + 4*r9], 112
+        je      .LBB4_11
+        lea     rax, [r14 + 1]
+        lea     rbp, [r14 - 11]
+        cmp     rax, 11
+        cmovbe  rbp, rax
+        cmp     rbp, 11
+        ja      .LBB4_70
+        cmp     byte ptr [r13 + rbp], 0
+        je      .LBB4_10
+.LBB4_11:
+        cmp     qword ptr [rbx + 8], 0
+        je      .LBB4_15
+.LBB4_12:
+        lea     rax, [r14 + 5]
+        lea     rbp, [r14 - 7]
+        cmp     rax, 11
+        cmovbe  rbp, rax
+        cmp     rbp, 11
+        ja      .LBB4_70
+        cmp     byte ptr [r13 + rbp], 0
+        jne     .LBB4_15
+        mov     byte ptr [r13 + rbp], 1
+        add     qword ptr [rbx + 8], -1
+        mov     dword ptr [r12 + 4*r10], 110
         mov     rdi, rbx
         mov     rsi, r12
         mov     rdx, r13
-        mov     rcx, rbp
-        mov     r8, r14
-        mov     qword ptr [rsp + 56], r9
-        mov     r9, r10
+        mov     rcx, qword ptr [rsp + 56]
+        mov     r8, rbp
+        mov     r9, r15
         mov     qword ptr [rsp + 64], r10
         call    example::_get_valid_sequences
         mov     r10, qword ptr [rsp + 64]
-        mov     r9, qword ptr [rsp + 56]
-        mov     byte ptr [r13 + r14], 0
-        add     qword ptr [rbx], 1
-.LBB4_9:
-        cmp     qword ptr [rbx + 8], 0
-        je      .LBB4_12
-        lea     rbp, [r15 + 5]
-        movabs  rcx, -6148914691236517205
-        mov     rax, rbp
-        mul     rcx
-        shr     rdx
-        and     rdx, -4
-        lea     rax, [rdx + 2*rdx]
-        sub     rbp, rax
-        cmp     byte ptr [r13 + rbp], 0
-        jne     .LBB4_12
-        mov     byte ptr [r13 + rbp], 1
-        add     qword ptr [rbx + 8], -1
-        mov     dword ptr [r12 + 4*r9], 110
-        mov     rdi, rbx
-        mov     rsi, r12
-        mov     rdx, r13
-        mov     rcx, qword ptr [rsp + 24]
-        mov     r8, rbp
-        mov     qword ptr [rsp + 56], r9
-        mov     r9, r10
-        mov     r14, r10
-        call    example::_get_valid_sequences
-        mov     r10, r14
-        mov     r9, qword ptr [rsp + 56]
         mov     byte ptr [r13 + rbp], 0
         add     qword ptr [rbx + 8], 1
-.LBB4_12:
         cmp     qword ptr [rbx + 16], 0
-        je      .LBB4_15
-        add     r15, 10
-        movabs  rcx, -6148914691236517205
-        mov     rax, r15
-        mul     rcx
-        shr     rdx
-        and     rdx, -4
-        lea     rax, [rdx + 2*rdx]
-        sub     r15, rax
-        cmp     byte ptr [r13 + r15], 0
-        jne     .LBB4_15
-        mov     byte ptr [r13 + r15], 1
-        add     qword ptr [rbx + 16], -1
-        mov     dword ptr [r12 + 4*r9], 100
+        jne     .LBB4_16
+        jmp     .LBB4_19
+.LBB4_10:
+        mov     byte ptr [r13 + rbp], 1
+        add     qword ptr [rbx], -1
+        mov     dword ptr [r12 + 4*r10], 112
         mov     rdi, rbx
         mov     rsi, r12
         mov     rdx, r13
-        mov     rcx, qword ptr [rsp + 24]
-        mov     r8, r15
-        mov     r9, r10
+        mov     rcx, qword ptr [rsp + 56]
+        mov     r8, rbp
+        mov     r9, r15
+        mov     qword ptr [rsp + 64], r10
         call    example::_get_valid_sequences
-        mov     byte ptr [r13 + r15], 0
+        mov     r10, qword ptr [rsp + 64]
+        mov     byte ptr [r13 + rbp], 0
+        add     qword ptr [rbx], 1
+        cmp     qword ptr [rbx + 8], 0
+        jne     .LBB4_12
+.LBB4_15:
+        cmp     qword ptr [rbx + 16], 0
+        je      .LBB4_19
+.LBB4_16:
+        lea     rax, [r14 + 10]
+        add     r14, -2
+        cmp     rax, 11
+        mov     rbp, r14
+        cmovbe  rbp, rax
+        cmp     rbp, 11
+        ja      .LBB4_70
+        cmp     byte ptr [r13 + rbp], 0
+        jne     .LBB4_19
+        mov     byte ptr [r13 + rbp], 1
+        add     qword ptr [rbx + 16], -1
+        mov     dword ptr [r12 + 4*r10], 100
+        mov     rdi, rbx
+        mov     rsi, r12
+        mov     rdx, r13
+        mov     rcx, qword ptr [rsp + 56]
+        mov     r8, rbp
+        mov     r9, r15
+        call    example::_get_valid_sequences
+        mov     byte ptr [r13 + rbp], 0
         add     qword ptr [rbx + 16], 1
-        jmp     .LBB4_15
-.LBB4_33:
-        mov     rcx, qword ptr [rdi]
-        jmp     .LBB4_34
-.LBB4_38:
-        mov     qword ptr [rsp], rbp
-        mov     qword ptr [rsp + 8], rbx
-        test    rbp, rbp
-        je      .LBB4_41
-        mov     rdi, rbp
+        jmp     .LBB4_19
+.LBB4_37:
+        mov     rcx, qword ptr [rbp]
+        jmp     .LBB4_38
+.LBB4_42:
+        mov     qword ptr [rsp + 8], r15
+        mov     qword ptr [rsp + 16], rbx
+        test    r15, r15
+        je      .LBB4_45
+        mov     rdi, r15
         mov     rsi, rbx
         call    qword ptr [rip + __rust_alloc@GOTPCREL]
         mov     rcx, rax
         test    rax, rax
-        jne     .LBB4_50
-        jmp     .LBB4_65
-.LBB4_43:
-        test    rbp, rbp
-        je      .LBB4_44
-        mov     rdi, rbp
+        jne     .LBB4_54
+        jmp     .LBB4_69
+.LBB4_47:
+        test    r15, r15
+        je      .LBB4_48
+        mov     rdi, r15
         mov     rsi, rdx
         call    qword ptr [rip + __rust_alloc@GOTPCREL]
         mov     rcx, rax
         test    rax, rax
-        jne     .LBB4_50
-        jmp     .LBB4_65
-.LBB4_48:
-        mov     r14, rsp
+        jne     .LBB4_54
+        jmp     .LBB4_69
+.LBB4_52:
+        lea     r14, [rsp + 8]
         call    qword ptr [rip + __rust_dealloc@GOTPCREL]
         mov     rdi, r14
         call    qword ptr [rip + core::alloc::Layout::dangling@GOTPCREL]
-        jmp     .LBB4_49
-.LBB4_41:
-        mov     rdi, rsp
+        jmp     .LBB4_53
+.LBB4_45:
+        lea     rdi, [rsp + 8]
         call    qword ptr [rip + core::alloc::Layout::dangling@GOTPCREL]
-        jmp     .LBB4_49
-.LBB4_44:
-        mov     rdi, rsp
+        jmp     .LBB4_53
+.LBB4_48:
+        lea     rdi, [rsp + 8]
         call    qword ptr [rip + core::alloc::Layout::dangling@GOTPCREL]
-.LBB4_49:
+.LBB4_53:
         mov     rcx, rax
         test    rax, rax
-        je      .LBB4_65
-.LBB4_50:
+        je      .LBB4_69
+.LBB4_54:
         movabs  rdx, -6148914691236517205
-        mov     rax, rbp
+        mov     rax, r15
         mul     rdx
         shr     rdx, 4
-        mov     rdi, qword ptr [rsp + 24]
-        mov     qword ptr [rdi], rcx
-        mov     qword ptr [rdi + 8], rdx
-        mov     rsi, qword ptr [rdi + 16]
-.LBB4_34:
+        mov     qword ptr [rbp], rcx
+        mov     qword ptr [rbp + 8], rdx
+        mov     rsi, qword ptr [rbp + 16]
+.LBB4_38:
         lea     rax, [rsi + 2*rsi]
         mov     rdx, qword ptr [rsp + 48]
         mov     qword ptr [rcx + 8*rax + 16], rdx
         movaps  xmm0, xmmword ptr [rsp + 32]
         movups  xmmword ptr [rcx + 8*rax], xmm0
-        add     qword ptr [rdi + 16], 1
-.LBB4_15:
+        add     qword ptr [rbp + 16], 1
+.LBB4_19:
         add     rsp, 72
         pop     rbx
         pop     r12
@@ -506,67 +503,64 @@ example::_get_valid_sequences:
         pop     rbp
         ret
 .LBB4_2:
-        movabs  rsi, -6148914691236517205
         test    rax, rax
         je      .LBB4_3
-        lea     rcx, [r15 + 1]
-        mov     rax, rcx
-        mul     rsi
-        shr     rdx
-        and     rdx, -4
-        lea     rax, [rdx + 2*rdx]
-        sub     rcx, rax
-        cmp     byte ptr [r13 + rcx], 0
-        je      .LBB4_54
+        lea     rax, [r14 + 1]
+        lea     rbp, [r14 - 11]
+        cmp     rax, 11
+        cmovbe  rbp, rax
+        cmp     rbp, 11
+        ja      .LBB4_70
+        cmp     byte ptr [r13 + rbp], 0
+        je      .LBB4_59
 .LBB4_3:
         cmp     qword ptr [rbx + 8], 0
-        je      .LBB4_57
-        lea     rcx, [r15 + 5]
-        mov     rax, rcx
-        mul     rsi
-        shr     rdx
-        and     rdx, -4
-        lea     rax, [rdx + 2*rdx]
-        sub     rcx, rax
-        cmp     byte ptr [r13 + rcx], 0
-        je      .LBB4_5
-.LBB4_57:
+        je      .LBB4_60
+        lea     rax, [r14 + 5]
+        lea     rbp, [r14 - 7]
+        cmp     rax, 11
+        cmovbe  rbp, rax
+        cmp     rbp, 11
+        ja      .LBB4_70
+        cmp     byte ptr [r13 + rbp], 0
+        je      .LBB4_6
+.LBB4_60:
         cmp     qword ptr [rbx + 16], 0
-        je      .LBB4_15
-        add     r15, 10
-        mov     rax, r15
-        mul     rsi
-        shr     rdx
-        and     rdx, -4
-        lea     rax, [rdx + 2*rdx]
-        sub     r15, rax
-        cmp     byte ptr [r13 + r15], 0
-        jne     .LBB4_15
-        mov     rsi, r9
+        je      .LBB4_19
+        lea     rax, [r14 + 10]
+        add     r14, -2
+        cmp     rax, 11
+        mov     rbp, r14
+        cmovbe  rbp, rax
+        cmp     rbp, 11
+        ja      .LBB4_70
+        cmp     byte ptr [r13 + rbp], 0
+        jne     .LBB4_19
         add     rbx, 16
-        add     r13, r15
-        jmp     .LBB4_56
-.LBB4_51:
+        jmp     .LBB4_59
+.LBB4_70:
+        lea     rdi, [rip + .L__unnamed_1]
+        mov     edx, 12
+        mov     rsi, rbp
+        call    qword ptr [rip + core::panicking::panic_bounds_check@GOTPCREL]
+        ud2
+.LBB4_55:
         call    qword ptr [rip + alloc::raw_vec::capacity_overflow@GOTPCREL]
         ud2
-.LBB4_65:
-        mov     rdi, rbp
+.LBB4_69:
+        mov     rdi, r15
         mov     rsi, rbx
         call    qword ptr [rip + alloc::alloc::handle_alloc_error@GOTPCREL]
         ud2
-.LBB4_54:
-        mov     rsi, r9
-        jmp     .LBB4_55
-.LBB4_5:
-        mov     rsi, r9
+.LBB4_6:
         add     rbx, 8
-.LBB4_55:
-        add     r13, rcx
-.LBB4_56:
+.LBB4_59:
+        add     r13, rbp
         mov     byte ptr [r13], 1
         add     qword ptr [rbx], -1
-        lea     rdi, [rip + .L__unnamed_1]
+        lea     rdi, [rip + .L__unnamed_2]
         mov     edx, 12
+        mov     rsi, r10
         call    qword ptr [rip + core::panicking::panic_bounds_check@GOTPCREL]
         ud2
         mov     rbx, rax
@@ -575,18 +569,22 @@ example::_get_valid_sequences:
         mov     rdi, rbx
         call    _Unwind_Resume@PLT
         ud2
-        jmp     .LBB4_18
-.LBB4_18:
+        jmp     .LBB4_22
+.LBB4_22:
         mov     rbx, rax
-        mov     rdi, rsp
+        lea     rdi, [rsp + 8]
         call    core::ptr::drop_in_place
         mov     rdi, rbx
         call    _Unwind_Resume@PLT
         ud2
 
-.L__unnamed_2:
+.L__unnamed_3:
         .ascii  "./example.rs"
 
 .L__unnamed_1:
-        .quad   .L__unnamed_2
-        .asciz  "\f\000\000\000\000\000\000\000-\000\000\000\r\000\000"
+        .quad   .L__unnamed_3
+        .asciz  "\f\000\000\000\000\000\000\000*\000\000\000\020\000\000"
+
+.L__unnamed_2:
+        .quad   .L__unnamed_3
+        .asciz  "\f\000\000\000\000\000\000\0000\000\000\000\r\000\000"

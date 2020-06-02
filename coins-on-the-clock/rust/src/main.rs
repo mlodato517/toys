@@ -1,112 +1,71 @@
-extern crate time;
+use std::time::Instant;
 
 fn main() {
-    let num_hours = 12;
-    let coins = [1, 5, 10];
-    let counts = [4, 4, 4];
-
-    let start = time::precise_time_ns();
+    println!("{:?}", get_valid_sequences());
+    let start = Instant::now();
     for _ in 0..1000 {
-        get_valid_sequences(num_hours, &coins, &counts);
+        get_valid_sequences();
     }
-    let end = time::precise_time_ns();
-    let diff = (end - start) / 1_000_000;
-
-    println!("{}", diff);
+    println!("{}", start.elapsed().as_millis());
 }
 
-fn get_valid_sequences(num_hours: usize, coins: &[usize], counts: &[usize]) -> Vec<String> {
-    let mut clock_state = vec![false; num_hours];
-    let mut current_sequence = Vec::with_capacity(num_hours);
+const NUM_HOURS: usize = 12;
+const COINS: [usize; 3] = [1, 5, 10];
+const COIN_CHARS: [char; 3] = ['p', 'n', 'd'];
 
+fn get_valid_sequences() -> Vec<String> {
     let mut sequences = Vec::new();
-    _get_valid_sequences_with_defaults(
-        num_hours,
-        coins,
-        counts,
-        &mut current_sequence,
-        &mut clock_state,
+
+    _get_valid_sequences(
+        &mut [4, 4, 4],
+        &mut [' '; NUM_HOURS],
+        &mut [false; NUM_HOURS],
         &mut sequences,
+        0,
+        0,
     );
 
     sequences
 }
 
-fn _get_valid_sequences_with_defaults(
-    num_hours: usize,
-    coins: &[usize],
-    counts: &[usize],
-    current_sequence: &mut Vec<usize>,
-    clock_state: &mut Vec<bool>,
-    return_values: &mut Vec<String>,
-) {
-    _get_valid_sequences(
-        num_hours,
-        coins,
-        counts,
-        current_sequence,
-        clock_state,
-        return_values,
-        0,
-        &mut vec![0; counts.len()],
-    );
-}
-
 fn _get_valid_sequences(
-    num_hours: usize,
-    coins: &[usize],
-    counts: &[usize],
-    current_sequence: &mut Vec<usize>,
-    clock_state: &mut Vec<bool>,
+    counts: &mut [usize; 3],
+    current_sequence: &mut [char; NUM_HOURS],
+    clock_state: &mut [bool; NUM_HOURS],
     return_values: &mut Vec<String>,
     current_value: usize,
-    current_counts: &mut Vec<usize>,
+    current_index: usize,
 ) {
-    if current_sequence.len() == num_hours {
-        return_values.push(current_sequence.iter().map(|&v| get_coin_name(v)).collect());
+    if counts.iter().all(|&n| n == 0) {
+        return_values.push(current_sequence.iter().collect());
     } else {
-        for i in 0..coins.len() {
-            let counts_remaining = counts[i] - current_counts[i];
-
-            if counts_remaining == 0 {
+        for i in 0..COINS.len() {
+            if counts[i] == 0 {
                 continue;
             }
 
-            let coin = coins[i];
-            let next_value = (current_value + coin) % num_hours;
+            let coin = COINS[i];
+            let next_value = (current_value + coin) % NUM_HOURS;
 
             if clock_state[next_value] {
                 continue;
             }
 
             clock_state[next_value] = true;
-            current_counts[i] += 1;
-            current_sequence.push(coin);
+            counts[i] -= 1;
+            current_sequence[current_index] = COIN_CHARS[i];
 
             _get_valid_sequences(
-                num_hours,
-                coins,
                 counts,
                 current_sequence,
                 clock_state,
                 return_values,
                 next_value,
-                current_counts,
+                current_index + 1,
             );
 
             clock_state[next_value] = false;
-            current_counts[i] -= 1;
-            current_sequence.pop();
+            counts[i] += 1;
         }
-    }
-}
-
-fn get_coin_name(coin_value: usize) -> char {
-    match coin_value {
-        1 => 'p',
-        5 => 'n',
-        10 => 'd',
-        25 => 'q',
-        _ => 'x',
     }
 }

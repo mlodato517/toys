@@ -59,3 +59,30 @@ fn _get_valid_sequences(
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_valid_sequences() {
+        assert_eq!(
+            get_valid_sequences(),
+            [
+                String::from("ppddnnpddpnn"),
+                String::from("pnpddnpnddpn"),
+                String::from("pnnpddpnnddp"),
+                String::from("pdpdnnpnndpd"),
+                String::from("nppppnddnddn"),
+                String::from("npppnddnddnp"),
+                String::from("nppnddpnpddn"),
+                String::from("nppnddnddnpp"),
+                String::from("npnddpnpddnp"),
+                String::from("npnddnddnppp"),
+                String::from("nnpddnpppndd"),
+                String::from("nnddpnpddnpp"),
+                String::from("nnddnddnpppp"),
+                String::from("nddnpppnddpn"),
+            ]
+        )
+    }
+}

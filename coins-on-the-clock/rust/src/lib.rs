@@ -6,7 +6,7 @@ pub fn get_valid_sequences() -> Vec<String> {
     let mut sequences = Vec::new();
 
     _get_valid_sequences(
-        &mut [4, 4, 4],
+        0b100100100,
         &mut [' '; NUM_HOURS],
         &mut [false; NUM_HOURS],
         &mut sequences,
@@ -17,19 +17,27 @@ pub fn get_valid_sequences() -> Vec<String> {
     sequences
 }
 
+fn has_coin(count: usize, offset: usize) -> bool {
+    count & (0b111 << offset * 3) != 0
+}
+
+fn take_coin(count: usize, offset: usize) -> usize {
+    count - (1 << offset * 3)
+}
+
 fn _get_valid_sequences(
-    counts: &mut [usize; 3],
+    counts: usize,
     current_sequence: &mut [char; NUM_HOURS],
     clock_state: &mut [bool; NUM_HOURS],
     return_values: &mut Vec<String>,
     current_value: usize,
     current_index: usize,
 ) {
-    if counts.iter().all(|&n| n == 0) {
+    if counts == 0 {
         return_values.push(current_sequence.iter().collect());
     } else {
         for i in 0..COINS.len() {
-            if counts[i] == 0 {
+            if !has_coin(counts, i) {
                 continue;
             }
 
@@ -41,11 +49,10 @@ fn _get_valid_sequences(
             }
 
             clock_state[next_value] = true;
-            counts[i] -= 1;
             current_sequence[current_index] = COIN_CHARS[i];
 
             _get_valid_sequences(
-                counts,
+                take_coin(counts, i),
                 current_sequence,
                 clock_state,
                 return_values,
@@ -54,7 +61,6 @@ fn _get_valid_sequences(
             );
 
             clock_state[next_value] = false;
-            counts[i] += 1;
         }
     }
 }

@@ -5,14 +5,7 @@ const COIN_CHARS: [char; 3] = ['p', 'n', 'd'];
 pub fn get_valid_sequences() -> Vec<String> {
     let mut sequences = Vec::new();
 
-    _get_valid_sequences(
-        &mut [4, 4, 4],
-        &mut [' '; NUM_HOURS],
-        0,
-        &mut sequences,
-        0,
-        0,
-    );
+    _get_valid_sequences(&mut [4, 4, 4], &mut [' '; NUM_HOURS], 0, &mut sequences, 0);
 
     sequences
 }
@@ -23,7 +16,6 @@ fn _get_valid_sequences(
     clock_state: u16,
     return_values: &mut Vec<String>,
     current_value: usize,
-    current_index: usize,
 ) {
     if counts.iter().all(|&n| n == 0) {
         return_values.push(current_sequence.iter().collect());
@@ -41,7 +33,7 @@ fn _get_valid_sequences(
             }
 
             counts[i] -= 1;
-            current_sequence[current_index] = COIN_CHARS[i];
+            current_sequence[clock_state.count_ones() as usize] = COIN_CHARS[i];
 
             _get_valid_sequences(
                 counts,
@@ -49,7 +41,6 @@ fn _get_valid_sequences(
                 clock_state | (1 << next_value),
                 return_values,
                 next_value,
-                current_index + 1,
             );
 
             counts[i] += 1;

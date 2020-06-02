@@ -34,7 +34,10 @@ fn _get_valid_sequences(
             }
 
             let coin = COINS[i];
-            let next_value = (current_value + coin) % NUM_HOURS;
+            let mut next_value = current_value + coin;
+            if next_value >= NUM_HOURS {
+                next_value -= NUM_HOURS;
+            }
 
             if clock_state[next_value] {
                 continue;

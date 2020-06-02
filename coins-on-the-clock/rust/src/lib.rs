@@ -1,19 +1,8 @@
-use std::time::Instant;
-
-fn main() {
-    println!("{:?}", get_valid_sequences());
-    let start = Instant::now();
-    for _ in 0..1000 {
-        get_valid_sequences();
-    }
-    println!("{}", start.elapsed().as_millis());
-}
-
 const NUM_HOURS: usize = 12;
 const COINS: [usize; 3] = [1, 5, 10];
 const COIN_CHARS: [char; 3] = ['p', 'n', 'd'];
 
-fn get_valid_sequences() -> Vec<String> {
+pub fn get_valid_sequences() -> Vec<String> {
     let mut sequences = Vec::new();
 
     _get_valid_sequences(
@@ -69,3 +58,4 @@ fn _get_valid_sequences(
         }
     }
 }
+

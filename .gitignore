@@ -1,5 +1,4 @@
 *.exe
-**/bin
 **/obj
 **/settings.json
 **/rust/target

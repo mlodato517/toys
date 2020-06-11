@@ -2,61 +2,49 @@ const NUM_HOURS: usize = 12;
 const COINS: [usize; 3] = [1, 5, 10];
 const COIN_CHARS: [char; 3] = ['p', 'n', 'd'];
 
+struct Node {
+    counts: usize,
+    current_sequence: [char; NUM_HOURS],
+    clock_state: usize,
+    current_value: usize,
+}
+
 pub fn get_valid_sequences() -> Vec<String> {
     let mut sequences = Vec::new();
 
-    _get_valid_sequences(
-        &mut [4, 4, 4],
-        &mut [' '; NUM_HOURS],
-        &mut [false; NUM_HOURS],
-        &mut sequences,
-        0,
-        0,
-    );
+    let mut stack = vec![Node {
+        counts: 0b100100100,
+        current_sequence: [' '; NUM_HOURS],
+        clock_state: 0,
+        current_value: 0,
+    }];
 
-    sequences
-}
+    while let Some(node) = stack.pop() {
+        let current_index = node.clock_state.count_ones() as usize;
+        if current_index == NUM_HOURS {
+            sequences.push(node.current_sequence.iter().collect());
+        } else {
+            for (i, coin) in COINS.iter().enumerate() {
+                if (0b111 << (i * 3)) & node.counts != 0 {
+                    let next_value = (node.current_value + coin) % NUM_HOURS;
 
-fn _get_valid_sequences(
-    counts: &mut [usize; 3],
-    current_sequence: &mut [char; NUM_HOURS],
-    clock_state: &mut [bool; NUM_HOURS],
-    return_values: &mut Vec<String>,
-    current_value: usize,
-    current_index: usize,
-) {
-    if counts.iter().all(|&n| n == 0) {
-        return_values.push(current_sequence.iter().collect());
-    } else {
-        for i in 0..COINS.len() {
-            if counts[i] == 0 {
-                continue;
+                    let clock_mask = 1 << next_value;
+                    if clock_mask & node.clock_state == 0 {
+                        let mut next_node = Node {
+                            current_value: next_value,
+                            ..node
+                        };
+                        next_node.counts -= 1 << (i * 3);
+                        next_node.clock_state = next_node.clock_state | clock_mask;
+                        next_node.current_sequence[current_index] = COIN_CHARS[i];
+                        stack.push(next_node);
+                    }
+                }
             }
-
-            let coin = COINS[i];
-            let next_value = (current_value + coin) % NUM_HOURS;
-
-            if clock_state[next_value] {
-                continue;
-            }
-
-            clock_state[next_value] = true;
-            counts[i] -= 1;
-            current_sequence[current_index] = COIN_CHARS[i];
-
-            _get_valid_sequences(
-                counts,
-                current_sequence,
-                clock_state,
-                return_values,
-                next_value,
-                current_index + 1,
-            );
-
-            clock_state[next_value] = false;
-            counts[i] += 1;
         }
     }
+
+    sequences
 }
 
 #[cfg(test)]
@@ -65,24 +53,25 @@ mod tests {
 
     #[test]
     fn test_valid_sequences() {
-        assert_eq!(
-            get_valid_sequences(),
-            [
-                String::from("ppddnnpddpnn"),
-                String::from("pnpddnpnddpn"),
-                String::from("pnnpddpnnddp"),
-                String::from("pdpdnnpnndpd"),
-                String::from("nppppnddnddn"),
-                String::from("npppnddnddnp"),
-                String::from("nppnddpnpddn"),
-                String::from("nppnddnddnpp"),
-                String::from("npnddpnpddnp"),
-                String::from("npnddnddnppp"),
-                String::from("nnpddnpppndd"),
-                String::from("nnddpnpddnpp"),
-                String::from("nnddnddnpppp"),
-                String::from("nddnpppnddpn"),
-            ]
-        )
+        let mut val = get_valid_sequences();
+        val.sort();
+        let mut expected = [
+            String::from("ppddnnpddpnn"),
+            String::from("pnpddnpnddpn"),
+            String::from("pnnpddpnnddp"),
+            String::from("pdpdnnpnndpd"),
+            String::from("nppppnddnddn"),
+            String::from("npppnddnddnp"),
+            String::from("nppnddpnpddn"),
+            String::from("nppnddnddnpp"),
+            String::from("npnddpnpddnp"),
+            String::from("npnddnddnppp"),
+            String::from("nnpddnpppndd"),
+            String::from("nnddpnpddnpp"),
+            String::from("nnddnddnpppp"),
+            String::from("nddnpppnddpn"),
+        ];
+        expected.sort();
+        assert_eq!(val, expected)
     }
 }

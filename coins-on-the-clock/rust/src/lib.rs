@@ -36,15 +36,6 @@ const CLOCK_STATE_BIT_LENGTH: u64 = NUM_HOURS;
 const COIN_COUNT_OFFSET: u64 = CLOCK_STATE_OFFSET + CLOCK_STATE_BIT_LENGTH;
 const COIN_COUNT_MASK: u64 = 0b111111111111 << COIN_COUNT_OFFSET;
 
-pub fn get_valid_sequences() -> Vec<String> {
-    let mut sequences = Vec::new();
-
-    // Initially we have 4 (0b100) of each coin
-    _get_valid_sequences(0b100100100 << COIN_COUNT_OFFSET, &mut sequences);
-
-    sequences
-}
-
 // Extract string sequence of coins from u64 state.
 // There are 12 coins so we loop 12 times.
 // Each coin gets two bits so we have to shift by 2 * i.
@@ -61,36 +52,43 @@ fn extract_sequence(state: u64) -> String {
         .collect()
 }
 
-fn _get_valid_sequences(state: u64, return_values: &mut Vec<String>) {
-    if state & COIN_COUNT_MASK == 0 {
-        return_values.push(extract_sequence(state));
-    } else {
-        for (i, coin) in COINS.iter().enumerate() {
-            let this_coin_count_offset = COIN_COUNT_OFFSET + i as u64 * 3;
-            let this_coin_count_mask = 0b111 << this_coin_count_offset;
-            if state & this_coin_count_mask != 0 {
-                let current_value = (state & CURRENT_VALUE_MASK) >> CURRENT_VALUE_OFFSET;
-                let next_value = (current_value + coin) % NUM_HOURS;
-                let this_hour_clock_mask = 1 << (CLOCK_STATE_OFFSET + next_value);
+pub fn get_valid_sequences() -> Vec<String> {
+    let mut sequences = Vec::new();
+    let mut stack = vec![0b100100100 << COIN_COUNT_OFFSET];
 
-                if state & this_hour_clock_mask == 0 {
-                    let coin_count_subtrahend = 1 << this_coin_count_offset;
-                    let num_placed_coins = (state & CLOCK_STATE_MASK).count_ones() as u64;
-                    let coin_id = COIN_IDS[i] << (num_placed_coins * COIN_BIT_LENGTH);
+    while let Some(state) = stack.pop() {
+        if state & COIN_COUNT_MASK == 0 {
+            sequences.push(extract_sequence(state));
+        } else {
+            for (i, coin) in COINS.iter().enumerate() {
+                let this_coin_count_offset = COIN_COUNT_OFFSET + i as u64 * 3;
+                let this_coin_count_mask = 0b111 << this_coin_count_offset;
+                if state & this_coin_count_mask != 0 {
+                    let current_value = (state & CURRENT_VALUE_MASK) >> CURRENT_VALUE_OFFSET;
+                    let next_value = (current_value + coin) % NUM_HOURS;
+                    let this_hour_clock_mask = 1 << (CLOCK_STATE_OFFSET + next_value);
 
-                    let mut new_state = state;
-                    new_state = new_state | this_hour_clock_mask; // mark clock-hour as taken
-                    new_state = new_state | coin_id; // add coin to sequence
-                    new_state -= coin_count_subtrahend; // decrement count of coin taken
+                    if state & this_hour_clock_mask == 0 {
+                        let coin_count_subtrahend = 1 << this_coin_count_offset;
+                        let num_placed_coins = (state & CLOCK_STATE_MASK).count_ones() as u64;
+                        let coin_id = COIN_IDS[i] << (num_placed_coins * COIN_BIT_LENGTH);
 
-                    // update current value by clearing out current value and adding in next_value
-                    new_state =
-                        (new_state & !CURRENT_VALUE_MASK) | next_value << CURRENT_VALUE_OFFSET;
-                    _get_valid_sequences(new_state, return_values);
+                        let mut new_state = state;
+                        new_state = new_state | this_hour_clock_mask; // mark clock-hour as taken
+                        new_state = new_state | coin_id; // add coin to sequence
+                        new_state -= coin_count_subtrahend; // decrement count of coin taken
+
+                        // update current value by clearing out current value and adding in next_value
+                        new_state =
+                            (new_state & !CURRENT_VALUE_MASK) | next_value << CURRENT_VALUE_OFFSET;
+                        stack.push(new_state);
+                    }
                 }
             }
         }
     }
+
+    sequences
 }
 
 #[cfg(test)]
@@ -99,24 +97,25 @@ mod tests {
 
     #[test]
     fn test_valid_sequences() {
-        assert_eq!(
-            get_valid_sequences(),
-            [
-                String::from("ppddnnpddpnn"),
-                String::from("pnpddnpnddpn"),
-                String::from("pnnpddpnnddp"),
-                String::from("pdpdnnpnndpd"),
-                String::from("nppppnddnddn"),
-                String::from("npppnddnddnp"),
-                String::from("nppnddpnpddn"),
-                String::from("nppnddnddnpp"),
-                String::from("npnddpnpddnp"),
-                String::from("npnddnddnppp"),
-                String::from("nnpddnpppndd"),
-                String::from("nnddpnpddnpp"),
-                String::from("nnddnddnpppp"),
-                String::from("nddnpppnddpn"),
-            ]
-        )
+        let mut received = get_valid_sequences();
+        received.sort();
+        let mut expected = [
+            String::from("ppddnnpddpnn"),
+            String::from("pnpddnpnddpn"),
+            String::from("pnnpddpnnddp"),
+            String::from("pdpdnnpnndpd"),
+            String::from("nppppnddnddn"),
+            String::from("npppnddnddnp"),
+            String::from("nppnddpnpddn"),
+            String::from("nppnddnddnpp"),
+            String::from("npnddpnpddnp"),
+            String::from("npnddnddnppp"),
+            String::from("nnpddnpppndd"),
+            String::from("nnddpnpddnpp"),
+            String::from("nnddnddnpppp"),
+            String::from("nddnpppnddpn"),
+        ];
+        expected.sort();
+        assert_eq!(received, expected);
     }
 }

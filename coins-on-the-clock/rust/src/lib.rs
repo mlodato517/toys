@@ -8,7 +8,7 @@ pub fn get_valid_sequences() -> Vec<String> {
     _get_valid_sequences(
         &mut [4, 4, 4],
         &mut [' '; NUM_HOURS],
-        &mut [false; NUM_HOURS],
+        0,
         &mut sequences,
         0,
         0,
@@ -20,7 +20,7 @@ pub fn get_valid_sequences() -> Vec<String> {
 fn _get_valid_sequences(
     counts: &mut [usize; 3],
     current_sequence: &mut [char; NUM_HOURS],
-    clock_state: &mut [bool; NUM_HOURS],
+    clock_state: u16,
     return_values: &mut Vec<String>,
     current_value: usize,
     current_index: usize,
@@ -36,24 +36,22 @@ fn _get_valid_sequences(
             let coin = COINS[i];
             let next_value = (current_value + coin) % NUM_HOURS;
 
-            if clock_state[next_value] {
+            if clock_state & (1 << next_value) != 0 {
                 continue;
             }
 
-            clock_state[next_value] = true;
             counts[i] -= 1;
             current_sequence[current_index] = COIN_CHARS[i];
 
             _get_valid_sequences(
                 counts,
                 current_sequence,
-                clock_state,
+                clock_state | (1 << next_value),
                 return_values,
                 next_value,
                 current_index + 1,
             );
 
-            clock_state[next_value] = false;
             counts[i] += 1;
         }
     }
